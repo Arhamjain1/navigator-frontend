@@ -18,13 +18,13 @@ import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
 
-// Scroll to top on route change
+// Scroll to top on route change (only pathname, not search params)
 function ScrollToTop() {
-  const { pathname, search } = useLocation();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [pathname, search]);
+  }, [pathname]);
 
   return null;
 }

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatPrice, calculateDiscount } from '../utils/helpers';
 import { useWishlist } from '../context/WishlistContext';
 
@@ -7,6 +8,21 @@ const ProductCard = ({ product, variant = 'default' }) => {
   const navigate = useNavigate();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const discount = calculateDiscount(product.originalPrice, product.price);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = product.images?.length > 0 ? product.images : ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'];
+
+  // Handle image navigation
+  const handlePrevImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNextImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
 
   // Handle wishlist toggle
   const handleWishlist = (e) => {
@@ -37,19 +53,40 @@ const ProductCard = ({ product, variant = 'default' }) => {
       <Link to={`/product/${product._id}`} className="block">
         {/* Image Container */}
         <div className={`relative ${aspectRatio} overflow-hidden bg-neutral-100 mb-5`}>
+          {/* Current image */}
           <img
-            src={product.images?.[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'}
+            src={images[currentImageIndex]}
             alt={product.name}
-            className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-110"
+            className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-500"
           />
-          
-          {/* Second image on hover */}
-          {product.images?.[1] && (
-            <img
-              src={product.images[1]}
-              alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover object-top opacity-0 transition-all duration-700 group-hover:opacity-100"
-            />
+
+          {/* Image Navigation Arrows - only show if multiple images */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={handlePrevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white z-10"
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={16} strokeWidth={2} />
+              </button>
+              <button
+                onClick={handleNextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white z-10"
+                aria-label="Next image"
+              >
+                <ChevronRight size={16} strokeWidth={2} />
+              </button>
+              {/* Image Indicators */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
+                {images.map((_, idx) => (
+                  <span
+                    key={idx}
+                    className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImageIndex ? 'bg-white' : 'bg-white/50'}`}
+                  />
+                ))}
+              </div>
+            </>
           )}
 
           {/* Gradient overlay on hover */}
