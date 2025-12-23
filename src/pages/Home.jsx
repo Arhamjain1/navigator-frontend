@@ -111,9 +111,9 @@ const Home = () => {
       <section className="relative h-[100vh] min-h-[700px] overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1920&h=1280&fit=crop&q=90"
+            src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1920&h=1400&fit=crop&crop=top&q=90"
             alt="Hero"
-            className="w-full h-full object-cover object-top"
+            className="w-full h-full object-cover object-[50%_0%]"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
         </div>
