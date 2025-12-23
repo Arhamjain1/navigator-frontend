@@ -7,10 +7,14 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply font-sans text-neutral-900 bg-white antialiased;
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -62,11 +66,15 @@
 
   /* Category Card */
   .category-card {
-    @apply relative overflow-hidden cursor-pointer group;
+    @apply relative overflow-hidden cursor-pointer;
   }
 
   .category-card img {
-    @apply w-full h-full object-cover transition-transform duration-700 group-hover:scale-105;
+    @apply w-full h-full object-cover transition-transform duration-700;
+  }
+
+  .category-card:hover img {
+    @apply scale-105;
   }
 
   .category-card-overlay {
