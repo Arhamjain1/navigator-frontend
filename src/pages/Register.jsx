@@ -37,7 +37,8 @@ const Register = () => {
     try {
       await register(formData.name, formData.email, formData.password);
       toast.success('Account created successfully!');
-      navigate(`/${redirect}`);
+      // Navigate to redirect path or home page
+      navigate(redirect === '/' ? '/' : redirect, { replace: true });
     } catch (error) {
       console.error('Registration error:', error);
       toast.error(error.response?.data?.message || 'Registration failed');
