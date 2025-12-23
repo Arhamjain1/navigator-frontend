@@ -54,13 +54,13 @@ const Home = () => {
     {
       title: 'Street Style',
       subtitle: 'Urban Edge Collection',
-      image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=800&q=80',
       link: '/shop?style=street'
     },
     {
       title: 'Premium Basics',
       subtitle: 'Everyday Essentials',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=800&q=80',
       link: '/shop?style=basics'
     }
   ];
@@ -213,12 +213,12 @@ const Home = () => {
           <Link
             key={index}
             to={banner.link}
-            className="relative h-[500px] md:h-[700px] overflow-hidden group"
+            className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden group"
           >
             <img
               src={`${banner.image}&fit=crop`}
               alt={banner.title}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover object-[50%_25%] transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
