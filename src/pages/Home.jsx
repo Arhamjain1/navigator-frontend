@@ -108,14 +108,14 @@ const Home = () => {
       </div>
 
       {/* Hero Section - Full Width Immersive */}
-      <section className="relative h-[85vh] min-h-[500px] md:min-h-[600px] overflow-hidden bg-neutral-900">
+      <section className="relative h-[70vh] md:h-[80vh] min-h-[500px] overflow-hidden bg-neutral-900">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1617137968427-85924c800a22?w=1920&q=85"
+            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=90"
             alt="Hero"
             className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         </div>
         
         <div className="relative h-full flex items-center">
