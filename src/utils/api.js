@@ -64,4 +64,13 @@ export const ordersAPI = {
   delete: (id) => api.delete(`/orders/${id}`),
 };
 
+// Wishlist API
+export const wishlistAPI = {
+  get: () => api.get('/wishlist'),
+  add: (productId) => api.post(`/wishlist/${productId}`),
+  remove: (productId) => api.delete(`/wishlist/${productId}`),
+  clear: () => api.delete('/wishlist'),
+  check: (productId) => api.get(`/wishlist/check/${productId}`),
+};
+
 export default api;

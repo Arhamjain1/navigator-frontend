@@ -2,35 +2,91 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag, Eye } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatPrice, calculateDiscount } from '../utils/helpers';
+import { wishlistAPI } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const ProductCard = ({ product, variant = 'default' }) => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const discount = calculateDiscount(product.originalPrice, product.price);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   // Check if product is in wishlist on mount
   useEffect(() => {
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-    setIsWishlisted(wishlist.some(item => item._id === product._id));
-  }, [product._id]);
+    const checkWishlist = async () => {
+      if (isAuthenticated) {
+        try {
+          const response = await wishlistAPI.check(product._id);
+          setIsWishlisted(response.data.isInWishlist);
+        } catch (error) {
+          // Fallback to localStorage
+          const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+          // Handle both old format (objects) and new format (string IDs)
+          const ids = wishlist.map(item => typeof item === 'object' && item._id ? item._id : item);
+          setIsWishlisted(ids.includes(product._id));
+        }
+      } else {
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        // Handle both old format (objects) and new format (string IDs)
+        const ids = wishlist.map(item => typeof item === 'object' && item._id ? item._id : item);
+        setIsWishlisted(ids.includes(product._id));
+      }
+    };
+    checkWishlist();
+  }, [product._id, isAuthenticated]);
 
   // Handle wishlist toggle
-  const handleWishlist = (e) => {
+  const handleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
     
-    if (isWishlisted) {
-      const newWishlist = wishlist.filter(item => item._id !== product._id);
-      localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-      setIsWishlisted(false);
-      toast.success('Removed from wishlist');
-    } else {
-      wishlist.push(product);
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-      setIsWishlisted(true);
-      toast.success('Added to wishlist!');
+    try {
+      if (isAuthenticated) {
+        if (isWishlisted) {
+          await wishlistAPI.remove(product._id);
+          setIsWishlisted(false);
+          toast.success('Removed from wishlist');
+        } else {
+          await wishlistAPI.add(product._id);
+          setIsWishlisted(true);
+          toast.success('Added to wishlist!');
+        }
+      } else {
+        // Use localStorage for guests
+        const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        
+        if (isWishlisted) {
+          const newWishlist = wishlist.filter(id => id !== product._id);
+          localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+          setIsWishlisted(false);
+          toast.success('Removed from wishlist');
+        } else {
+          wishlist.push(product._id);
+          localStorage.setItem('wishlist', JSON.stringify(wishlist));
+          setIsWishlisted(true);
+          toast.success('Added to wishlist!');
+        }
+      }
+    } catch (error) {
+      console.error('Wishlist error:', error);
+      // Fallback to localStorage on error
+      let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      // Normalize - ensure all items are IDs
+      wishlist = wishlist.map(item => typeof item === 'object' && item._id ? item._id : item)
+        .filter(id => typeof id === 'string' && id.length > 0);
+      
+      if (isWishlisted) {
+        const newWishlist = wishlist.filter(id => id !== product._id);
+        localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+        setIsWishlisted(false);
+        toast.success('Removed from wishlist');
+      } else {
+        wishlist.push(product._id);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        setIsWishlisted(true);
+        toast.success('Added to wishlist!');
+      }
     }
   };
 

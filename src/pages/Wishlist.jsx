@@ -1,25 +1,57 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Trash2, ChevronRight } from 'lucide-react';
-import { productsAPI } from '../utils/api';
+import { productsAPI, wishlistAPI } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/helpers';
 import Loading from '../components/Loading';
 
 const Wishlist = () => {
-  const [wishlistItems, setWishlistItems] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const fetchWishlistProducts = async () => {
       try {
-        // Get wishlist from localStorage
+        if (isAuthenticated) {
+          // Fetch from backend for logged-in users
+          const response = await wishlistAPI.get();
+          setProducts(response.data);
+        } else {
+          // Use localStorage for guests
+          const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+          
+          if (savedWishlist.length > 0) {
+            // Handle both old format (objects) and new format (string IDs)
+            const productIds = savedWishlist.map(item => 
+              typeof item === 'object' && item._id ? item._id : item
+            ).filter(id => typeof id === 'string' && id.length > 0);
+            
+            // Normalize localStorage to use only IDs
+            localStorage.setItem('wishlist', JSON.stringify(productIds));
+            
+            const productPromises = productIds.map(id => 
+              productsAPI.getById(id).catch(() => null)
+            );
+            const responses = await Promise.all(productPromises);
+            const validProducts = responses
+              .filter(res => res && res.data)
+              .map(res => res.data);
+            setProducts(validProducts);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching wishlist:', error);
+        // Fallback to localStorage on error
         const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        setWishlistItems(savedWishlist);
-
         if (savedWishlist.length > 0) {
-          // Fetch product details for each wishlist item
-          const productPromises = savedWishlist.map(id => 
+          // Handle both old format (objects) and new format (string IDs)
+          const productIds = savedWishlist.map(item => 
+            typeof item === 'object' && item._id ? item._id : item
+          ).filter(id => typeof id === 'string' && id.length > 0);
+          
+          const productPromises = productIds.map(id => 
             productsAPI.getById(id).catch(() => null)
           );
           const responses = await Promise.all(productPromises);
@@ -28,27 +60,49 @@ const Wishlist = () => {
             .map(res => res.data);
           setProducts(validProducts);
         }
-      } catch (error) {
-        console.error('Error fetching wishlist:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchWishlistProducts();
-  }, []);
+  }, [isAuthenticated]);
 
-  const removeFromWishlist = (productId) => {
-    const newWishlist = wishlistItems.filter(id => id !== productId);
-    localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-    setWishlistItems(newWishlist);
-    setProducts(products.filter(p => p._id !== productId));
+  const removeFromWishlist = async (productId) => {
+    try {
+      if (isAuthenticated) {
+        const response = await wishlistAPI.remove(productId);
+        setProducts(response.data);
+      } else {
+        const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+        const newWishlist = savedWishlist.filter(id => id !== productId);
+        localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+        setProducts(products.filter(p => p._id !== productId));
+      }
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+      // Fallback to localStorage
+      const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+      const newWishlist = savedWishlist.filter(id => id !== productId);
+      localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+      setProducts(products.filter(p => p._id !== productId));
+    }
   };
 
-  const clearWishlist = () => {
-    localStorage.setItem('wishlist', JSON.stringify([]));
-    setWishlistItems([]);
-    setProducts([]);
+  const clearWishlist = async () => {
+    try {
+      if (isAuthenticated) {
+        await wishlistAPI.clear();
+        setProducts([]);
+      } else {
+        localStorage.setItem('wishlist', JSON.stringify([]));
+        setProducts([]);
+      }
+    } catch (error) {
+      console.error('Error clearing wishlist:', error);
+      localStorage.setItem('wishlist', JSON.stringify([]));
+      setProducts([]);
+    }
   };
 
   if (loading) return <Loading fullScreen />;
