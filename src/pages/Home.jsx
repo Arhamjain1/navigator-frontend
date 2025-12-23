@@ -108,12 +108,12 @@ const Home = () => {
       </div>
 
       {/* Hero Section - Full Width Immersive */}
-      <section className="relative h-[70vh] md:h-[80vh] min-h-[500px] overflow-hidden bg-neutral-900">
+      <section className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-neutral-900">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=90"
             alt="Hero"
-            className="w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         </div>
@@ -171,7 +171,7 @@ const Home = () => {
                 to={cat.tag ? `/shop?tag=${cat.tag}` : `/shop?category=${cat.slug}`}
                 className="category-card aspect-[3/4]"
               >
-                <img src={cat.image} alt={cat.name} className="object-top" />
+                <img src={cat.image} alt={cat.name} className="absolute inset-0 w-full h-full object-cover object-top" />
                 <div className="category-card-overlay" />
                 <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8">
                   <span className="text-white/70 text-xs uppercase tracking-widest mb-1">{cat.description}</span>
@@ -218,7 +218,7 @@ const Home = () => {
             <img
               src={banner.image}
               alt={banner.title}
-              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">

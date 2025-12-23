@@ -104,11 +104,11 @@ const ProductDetail = () => {
           {/* Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="aspect-[3/4] bg-neutral-100 overflow-hidden relative group">
+            <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden group">
               <img
                 src={product.images?.[selectedImage] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'}
                 alt={product.name}
-                className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
               />
               
               {/* Badges */}

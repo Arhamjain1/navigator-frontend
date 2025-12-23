@@ -40,7 +40,7 @@ const ProductCard = ({ product, variant = 'default' }) => {
           <img
             src={product.images?.[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'}
             alt={product.name}
-            className="w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-110"
+            className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-110"
           />
           
           {/* Second image on hover */}
