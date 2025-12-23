@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { cartAPI } from '../utils/api';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
@@ -17,16 +17,54 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState({ items: [], totalAmount: 0 });
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
+  const prevAuthState = useRef(isAuthenticated);
 
-  // Load cart from localStorage for non-authenticated users or from API for authenticated users
+  // Load cart on initial mount from localStorage (for guests)
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchCart();
-    } else {
-      // Clear cart when user logs out
-      setCart({ items: [], totalAmount: 0 });
-      localStorage.removeItem('cart');
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart && !isAuthenticated) {
+      setCart(JSON.parse(savedCart));
     }
+  }, []);
+
+  // Handle auth state changes - merge guest cart on login
+  useEffect(() => {
+    const handleAuthChange = async () => {
+      // User just logged in (was not authenticated, now is)
+      if (isAuthenticated && !prevAuthState.current) {
+        const guestCart = localStorage.getItem('cart');
+        if (guestCart) {
+          const parsedGuestCart = JSON.parse(guestCart);
+          // Merge guest cart items to server cart
+          if (parsedGuestCart.items && parsedGuestCart.items.length > 0) {
+            try {
+              for (const item of parsedGuestCart.items) {
+                await cartAPI.add({
+                  productId: item.product._id,
+                  quantity: item.quantity,
+                  size: item.size,
+                  color: item.color,
+                });
+              }
+              localStorage.removeItem('cart');
+              toast.success('Your cart items have been saved!');
+            } catch (error) {
+              console.error('Error merging cart:', error);
+            }
+          }
+        }
+        fetchCart();
+      }
+      // User just logged out
+      else if (!isAuthenticated && prevAuthState.current) {
+        setCart({ items: [], totalAmount: 0 });
+        localStorage.removeItem('cart');
+      }
+      // Update previous auth state
+      prevAuthState.current = isAuthenticated;
+    };
+
+    handleAuthChange();
   }, [isAuthenticated]);
 
   const fetchCart = async () => {
@@ -48,6 +86,13 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cart', JSON.stringify(cartData));
     setCart(cartData);
   };
+
+  // Save cart to localStorage whenever it changes (for guests)
+  useEffect(() => {
+    if (!isAuthenticated && cart.items.length > 0) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+  }, [cart, isAuthenticated]);
 
   const addToCart = async (product, quantity, size, color) => {
     try {
