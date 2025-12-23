@@ -142,6 +142,14 @@ const Navbar = () => {
             </Link>
 
             <Link
+              to="/wishlist"
+              className={`p-2.5 ${textColor} hover:opacity-70 transition-opacity relative`}
+              aria-label="Wishlist"
+            >
+              <Heart size={20} strokeWidth={1.5} />
+            </Link>
+
+            <Link
               to="/cart"
               className={`p-2.5 ${textColor} hover:opacity-70 transition-opacity relative`}
               aria-label="Cart"

@@ -54,13 +54,13 @@ const Home = () => {
     {
       title: 'Street Style',
       subtitle: 'Urban Edge Collection',
-      image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=1200&q=80',
       link: '/shop?style=street'
     },
     {
       title: 'Premium Basics',
       subtitle: 'Everyday Essentials',
-      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80',
+      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',
       link: '/shop?style=basics'
     }
   ];
