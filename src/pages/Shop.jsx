@@ -129,11 +129,11 @@ const Shop = () => {
   return (
     <div className="pt-20 bg-white min-h-screen">
       {/* Hero Banner */}
-      <div className="relative h-[40vh] md:h-[50vh] overflow-hidden">
+      <div className="relative h-[250px] md:h-[350px] lg:h-[400px] overflow-hidden">
         <img 
           src={getHeroImage()}
           alt={getPageTitle()}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
         <div className="absolute inset-0 flex items-end">

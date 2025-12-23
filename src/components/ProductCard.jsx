@@ -29,8 +29,8 @@ const ProductCard = ({ product, variant = 'default' }) => {
     navigate(`/product/${product._id}`);
   };
 
-  // Different sizes for different contexts
-  const aspectRatio = variant === 'featured' ? 'aspect-[4/5]' : 'aspect-[3/4]';
+  // Consistent aspect ratio across all variants
+  const aspectRatio = 'aspect-[3/4]';
 
   return (
     <div className="group product-card">
@@ -40,7 +40,7 @@ const ProductCard = ({ product, variant = 'default' }) => {
           <img
             src={product.images?.[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'}
             alt={product.name}
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover object-top transition-all duration-700 group-hover:scale-110"
           />
           
           {/* Second image on hover */}
@@ -48,7 +48,7 @@ const ProductCard = ({ product, variant = 'default' }) => {
             <img
               src={product.images[1]}
               alt={product.name}
-              className="absolute inset-0 w-full h-full object-cover opacity-0 transition-all duration-700 group-hover:opacity-100"
+              className="absolute inset-0 w-full h-full object-cover object-top opacity-0 transition-all duration-700 group-hover:opacity-100"
             />
           )}
 

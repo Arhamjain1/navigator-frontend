@@ -62,11 +62,11 @@
 
   /* Category Card */
   .category-card {
-    @apply relative overflow-hidden cursor-pointer;
+    @apply relative overflow-hidden cursor-pointer group;
   }
 
   .category-card img {
-    @apply w-full h-full object-cover transition-transform duration-700;
+    @apply w-full h-full object-cover transition-transform duration-700 group-hover:scale-105;
   }
 
   .category-card-overlay {

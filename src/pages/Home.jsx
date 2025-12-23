@@ -169,9 +169,9 @@ const Home = () => {
               <Link
                 key={cat.slug}
                 to={cat.tag ? `/shop?tag=${cat.tag}` : `/shop?category=${cat.slug}`}
-                className="category-card aspect-[3/4] md:aspect-[4/5]"
+                className="category-card aspect-[3/4]"
               >
-                <img src={cat.image} alt={cat.name} />
+                <img src={cat.image} alt={cat.name} className="object-top" />
                 <div className="category-card-overlay" />
                 <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-8">
                   <span className="text-white/70 text-xs uppercase tracking-widest mb-1">{cat.description}</span>
@@ -213,12 +213,12 @@ const Home = () => {
           <Link
             key={index}
             to={banner.link}
-            className="relative aspect-[3/4] md:aspect-[4/5] overflow-hidden group"
+            className="relative aspect-[3/4] overflow-hidden group"
           >
             <img
               src={banner.image}
               alt={banner.title}
-              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
             <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">

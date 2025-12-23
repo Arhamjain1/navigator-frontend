@@ -353,7 +353,7 @@ const Admin = () => {
                                   <img
                                     src={product.images?.[0] || 'https://via.placeholder.com/50'}
                                     alt={product.name}
-                                    className="w-12 h-14 object-cover"
+                                    className="w-12 h-14 object-cover object-top"
                                   />
                                   <span className="text-sm">{product.name}</span>
                                 </div>

@@ -110,7 +110,7 @@ const Cart = () => {
                       <img
                         src={item.product?.images?.[0] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=200&q=80'}
                         alt={item.product?.name}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
                       />
                     </Link>
                     <div className="flex flex-col justify-between py-1">

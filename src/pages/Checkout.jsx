@@ -479,7 +479,7 @@ const Checkout = () => {
                         <img
                           src={item.product?.images?.[0] || 'https://via.placeholder.com/80x100'}
                           alt={item.product?.name}
-                          className="w-16 h-20 object-cover rounded-lg"
+                          className="w-16 h-20 object-cover object-top rounded-lg"
                         />
                         <div className="flex-1">
                           <p className="font-medium text-gray-900">{item.product?.name}</p>
