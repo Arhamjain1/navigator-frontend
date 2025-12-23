@@ -247,9 +247,9 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Horizontal Scroll */}
+        {/* Horizontal Scroll - Fixed padding for last item visibility */}
         <div className="overflow-x-auto no-scrollbar">
-          <div className="flex gap-4 md:gap-6 px-4 md:px-12 pb-4" style={{ width: 'max-content' }}>
+          <div className="flex gap-4 md:gap-6 pl-4 md:pl-12 pr-8 md:pr-16 pb-4">
             {newArrivals.map((product) => (
               <div key={product._id} className="w-[280px] md:w-[320px] flex-shrink-0">
                 <ProductCard product={product} />
