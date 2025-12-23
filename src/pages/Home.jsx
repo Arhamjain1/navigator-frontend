@@ -233,7 +233,7 @@ const Home = () => {
         ))}
       </section>
 
-      {/* New Arrivals - Full Width Scroll */}
+      {/* New Arrivals - Grid Layout */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container-custom">
           <div className="flex items-end justify-between mb-10">
@@ -245,23 +245,19 @@ const Home = () => {
               View All <ChevronRight size={16} />
             </Link>
           </div>
-        </div>
 
-        {/* Horizontal Scroll - Fixed padding for last item visibility */}
-        <div className="overflow-x-auto no-scrollbar">
-          <div className="flex gap-4 md:gap-6 pl-4 md:pl-12 pr-8 md:pr-16 pb-4">
-            {newArrivals.map((product) => (
-              <div key={product._id} className="w-[280px] md:w-[320px] flex-shrink-0">
-                <ProductCard product={product} />
-              </div>
+          {/* Grid Layout like Featured Products */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {newArrivals.slice(0, 8).map((product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
-        </div>
 
-        <div className="container-custom mt-8 md:hidden">
-          <Link to="/shop?sort=newest" className="flex items-center gap-2 text-sm font-medium hover:underline">
-            View All New Arrivals <ChevronRight size={16} />
-          </Link>
+          <div className="text-center mt-12 md:hidden">
+            <Link to="/shop?sort=newest" className="text-sm font-medium hover:underline inline-flex items-center gap-2">
+              View All New Arrivals <ChevronRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
 

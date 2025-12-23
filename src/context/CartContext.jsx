@@ -96,6 +96,39 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = async (product, quantity, size, color) => {
     try {
+      // Get available stock for this size
+      const getStockForSize = (sz) => {
+        if (product?.stockBySize && typeof product.stockBySize === 'object') {
+          if (product.stockBySize instanceof Map) {
+            return product.stockBySize.get(sz) || 0;
+          }
+          return product.stockBySize[sz] || 0;
+        }
+        return product?.stock || 0;
+      };
+      
+      const maxStock = getStockForSize(size);
+      
+      // Check existing quantity in cart for this product/size
+      const existingItem = cart.items.find(
+        (item) =>
+          item.product?._id === product._id &&
+          item.size === size &&
+          item.color?.name === color?.name
+      );
+      const currentQtyInCart = existingItem ? existingItem.quantity : 0;
+      const newTotalQty = currentQtyInCart + quantity;
+      
+      if (newTotalQty > maxStock) {
+        if (currentQtyInCart >= maxStock) {
+          toast.error(`Maximum quantity (${maxStock}) already in cart for size ${size}`);
+          return;
+        } else {
+          toast.error(`Only ${maxStock - currentQtyInCart} more available for size ${size}`);
+          return;
+        }
+      }
+
       if (isAuthenticated) {
         const response = await cartAPI.add({
           productId: product._id,
@@ -146,8 +179,14 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateQuantity = async (itemId, quantity) => {
+  const updateQuantity = async (itemId, quantity, maxStock = null) => {
     try {
+      // Check if quantity exceeds stock
+      if (maxStock !== null && quantity > maxStock) {
+        toast.error(`Only ${maxStock} available`);
+        return;
+      }
+      
       if (isAuthenticated) {
         const response = await cartAPI.update(itemId, { quantity });
         setCart(response.data);

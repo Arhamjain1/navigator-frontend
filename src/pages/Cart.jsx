@@ -149,8 +149,21 @@ const Cart = () => {
                       </button>
                       <span className="w-10 text-center text-sm font-medium">{item.quantity}</span>
                       <button
-                        onClick={() => updateQuantity(item._id, item.quantity + 1)}
-                        className="p-2.5 hover:bg-neutral-50 transition-colors"
+                        onClick={() => {
+                          const stockBySize = item.product?.stockBySize || {};
+                          const maxStock = stockBySize instanceof Map 
+                            ? stockBySize.get(item.size) || item.product?.stock || 99
+                            : stockBySize[item.size] || item.product?.stock || 99;
+                          updateQuantity(item._id, item.quantity + 1, maxStock);
+                        }}
+                        className="p-2.5 hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={(() => {
+                          const stockBySize = item.product?.stockBySize || {};
+                          const maxStock = stockBySize instanceof Map 
+                            ? stockBySize.get(item.size) || item.product?.stock || 99
+                            : stockBySize[item.size] || item.product?.stock || 99;
+                          return item.quantity >= maxStock;
+                        })()}
                       >
                         <Plus size={12} />
                       </button>

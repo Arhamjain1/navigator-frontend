@@ -334,9 +334,9 @@ const ProductDetail = () => {
                     );
                   })}
                 </div>
-                {selectedSize && (
-                  <p className="text-xs text-neutral-500 mt-2">
-                    {getStockForSize(selectedSize)} item(s) available in {selectedSize}
+                {selectedSize && getStockForSize(selectedSize) < 5 && getStockForSize(selectedSize) > 0 && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    Only {getStockForSize(selectedSize)} left in {selectedSize}
                   </p>
                 )}
               </div>
