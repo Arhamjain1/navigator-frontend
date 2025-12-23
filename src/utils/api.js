@@ -54,8 +54,10 @@ export const cartAPI = {
 // Orders API
 export const ordersAPI = {
   create: (orderData) => api.post('/orders', orderData),
+  createGuest: (orderData) => api.post('/orders/guest', orderData),
   getMyOrders: () => api.get('/orders'),
   getById: (id) => api.get(`/orders/${id}`),
+  getGuestById: (id) => api.get(`/orders/guest/${id}`),
   getAll: (params) => api.get('/orders/all', { params }),
   updateStatus: (id, status) => api.put(`/orders/${id}/status`, { status }),
   getStats: () => api.get('/orders/stats'),

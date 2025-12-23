@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { CheckCircle, Package, Truck } from 'lucide-react';
 import { ordersAPI } from '../utils/api';
 import { formatPrice, formatDate } from '../utils/helpers';
@@ -7,13 +7,18 @@ import Loading from '../components/Loading';
 
 const OrderSuccess = () => {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const isGuest = searchParams.get('guest') === 'true';
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await ordersAPI.getById(id);
+        // Use guest endpoint if it's a guest order
+        const response = isGuest 
+          ? await ordersAPI.getGuestById(id)
+          : await ordersAPI.getById(id);
         setOrder(response.data);
       } catch (error) {
         console.error('Error fetching order:', error);
@@ -23,7 +28,7 @@ const OrderSuccess = () => {
     };
 
     fetchOrder();
-  }, [id]);
+  }, [id, isGuest]);
 
   if (loading) return <Loading fullScreen />;
 
@@ -145,9 +150,11 @@ const OrderSuccess = () => {
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/profile" className="btn-secondary">
-              View Orders
-            </Link>
+            {!isGuest && (
+              <Link to="/profile" className="btn-secondary">
+                View Orders
+              </Link>
+            )}
             <Link to="/shop" className="btn-primary">
               Continue Shopping
             </Link>

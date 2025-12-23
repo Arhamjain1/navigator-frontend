@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { CreditCard, Truck, Check } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { CreditCard, Truck, Check, Mail } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { ordersAPI } from '../utils/api';
@@ -9,10 +9,13 @@ import toast from 'react-hot-toast';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isGuestCheckout = searchParams.get('guest') === 'true';
   const { cart, clearCart } = useCart();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
+  const [guestEmail, setGuestEmail] = useState('');
   
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
@@ -26,12 +29,49 @@ const Checkout = () => {
 
   const [paymentMethod, setPaymentMethod] = useState('card');
 
+  // Calculate tax for each item based on price slab
+  // If price > 2500: 18% tax (price is inclusive)
+  // If price <= 2500: 5% tax (price is inclusive)
+  const taxCalculation = useMemo(() => {
+    let totalBasePrice = 0;
+    let totalTax = 0;
+    
+    const itemsWithTax = cart.items.map(item => {
+      const itemTotal = item.price * item.quantity;
+      const taxRate = item.price > 2500 ? 0.18 : 0.05;
+      // Price is inclusive of tax, so: price = basePrice + tax = basePrice * (1 + taxRate)
+      // basePrice = price / (1 + taxRate)
+      const basePrice = itemTotal / (1 + taxRate);
+      const tax = itemTotal - basePrice;
+      
+      totalBasePrice += basePrice;
+      totalTax += tax;
+      
+      return {
+        ...item,
+        basePrice: basePrice,
+        tax: tax,
+        taxRate: taxRate * 100
+      };
+    });
+    
+    return {
+      itemsWithTax,
+      subtotal: totalBasePrice,
+      totalTax: totalTax,
+      displayTotal: cart.totalAmount
+    };
+  }, [cart.items, cart.totalAmount]);
+
   const shippingPrice = cart.totalAmount >= 2999 ? 0 : 199;
-  const taxPrice = 0; // Prices are inclusive of GST
   const totalAmount = cart.totalAmount + shippingPrice;
 
   const handleShippingSubmit = (e) => {
     e.preventDefault();
+    if (isGuestCheckout && !guestEmail) {
+      toast.error('Please enter your email address');
+      return;
+    }
     setStep(2);
   };
 
@@ -52,16 +92,34 @@ const Checkout = () => {
         items: orderItems,
         shippingAddress,
         paymentMethod,
-        itemsTotal: cart.totalAmount,
+        itemsTotal: taxCalculation.subtotal,
         shippingPrice,
-        taxPrice,
+        taxPrice: taxCalculation.totalTax,
         totalAmount,
       };
 
-      const response = await ordersAPI.create(orderData);
+      let response;
+      if (isGuestCheckout && !isAuthenticated) {
+        orderData.guestEmail = guestEmail;
+        response = await ordersAPI.createGuest(orderData);
+      } else {
+        response = await ordersAPI.create(orderData);
+      }
+      
+      // Clear cart from localStorage for guest users
+      if (isGuestCheckout && !isAuthenticated) {
+        localStorage.removeItem('guestCart');
+      }
       await clearCart();
+      
       toast.success('Order placed successfully!');
-      navigate(`/order-success/${response.data._id}`);
+      
+      // Redirect to order success page with guest flag if needed
+      if (isGuestCheckout && !isAuthenticated) {
+        navigate(`/order-success/${response.data._id}?guest=true`);
+      } else {
+        navigate(`/order-success/${response.data._id}`);
+      }
     } catch (error) {
       console.error('Error placing order:', error);
       toast.error(error.response?.data?.message || 'Failed to place order');
@@ -69,6 +127,25 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  // Redirect non-authenticated users without guest flag to cart
+  if (!isAuthenticated && !isGuestCheckout) {
+    return (
+      <div className="pt-24 md:pt-28 min-h-[70vh] flex items-center justify-center bg-white">
+        <div className="text-center">
+          <h1 className="font-display text-2xl mb-4 text-gray-900">Please login or checkout as guest</h1>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/login?redirect=checkout" className="btn-primary">
+              Login
+            </Link>
+            <Link to="/checkout?guest=true" className="btn-secondary">
+              Checkout as Guest
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (cart.items.length === 0) {
     return (
@@ -130,6 +207,28 @@ const Checkout = () => {
             {/* Step 1: Shipping */}
             {step === 1 && (
               <form onSubmit={handleShippingSubmit} className="space-y-6">
+                {/* Guest Email Field */}
+                {isGuestCheckout && !isAuthenticated && (
+                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl mb-6">
+                    <h3 className="font-display text-lg flex items-center gap-2 mb-4">
+                      <Mail size={20} />
+                      Guest Checkout
+                    </h3>
+                    <div>
+                      <label className="block text-sm font-medium mb-2">Email Address *</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="Enter your email for order confirmation"
+                        value={guestEmail}
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                        className="input"
+                      />
+                      <p className="text-xs text-gray-500 mt-2">We'll send your order confirmation to this email</p>
+                    </div>
+                  </div>
+                )}
+
                 <h2 className="font-display text-xl flex items-center gap-2">
                   <Truck size={24} />
                   Shipping Address
@@ -423,9 +522,13 @@ const Checkout = () => {
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">
-                    Items ({cart.items.reduce((a, b) => a + b.quantity, 0)})
+                    Subtotal ({cart.items.reduce((a, b) => a + b.quantity, 0)} items)
                   </span>
-                  <span className="text-gray-900">{formatPrice(cart.totalAmount)}</span>
+                  <span className="text-gray-900">{formatPrice(taxCalculation.subtotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">GST (5%/18%)</span>
+                  <span className="text-gray-900">{formatPrice(taxCalculation.totalTax)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Shipping</span>
@@ -433,8 +536,9 @@ const Checkout = () => {
                     {shippingPrice === 0 ? 'FREE' : formatPrice(shippingPrice)}
                   </span>
                 </div>
-                <div className="text-xs text-gray-400 italic">
-                  * Prices are inclusive of GST
+                <div className="text-xs text-gray-400 italic bg-gray-100 p-2 rounded">
+                  <p>* Items ≤ ₹2,500: 5% GST</p>
+                  <p>* Items &gt; ₹2,500: 18% GST</p>
                 </div>
                 <div className="border-t border-gray-200 pt-4 flex justify-between text-base font-medium">
                   <span className="text-gray-900">Total</span>

@@ -110,10 +110,12 @@ const Home = () => {
       {/* Hero Section - Full Width Immersive */}
       <section className="relative h-[100vh] min-h-[700px] overflow-hidden">
         <div className="absolute inset-0">
+          {/* Background layer for when image doesn't fully cover */}
+          <div className="absolute inset-0 bg-neutral-900" />
           <img
             src={heroSlides[0].image}
             alt="Hero"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-[50%_15%] sm:object-[50%_20%] md:object-[50%_30%] lg:object-[50%_35%] xl:object-[50%_40%]"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
         </div>

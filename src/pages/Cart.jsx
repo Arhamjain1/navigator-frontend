@@ -221,6 +221,13 @@ const Cart = () => {
                     Login to Checkout
                     <ArrowRight size={16} />
                   </Link>
+                  <Link 
+                    to="/checkout?guest=true" 
+                    className="w-full bg-white text-black border-2 border-black py-4 text-sm font-semibold uppercase tracking-[0.15em] hover:bg-black hover:text-white transition-colors flex items-center justify-center gap-2"
+                  >
+                    Checkout as Guest
+                    <ArrowRight size={16} />
+                  </Link>
                   <p className="text-center text-xs text-neutral-400">
                     New here?{' '}
                     <Link to="/register?redirect=checkout" className="underline underline-offset-2 hover:text-black transition-colors">
