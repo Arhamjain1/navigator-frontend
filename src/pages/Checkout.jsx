@@ -527,7 +527,7 @@ const Checkout = () => {
                   <span className="text-gray-900">{formatPrice(taxCalculation.subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-500">GST (5%/18%)</span>
+                  <span className="text-gray-500">Tax</span>
                   <span className="text-gray-900">{formatPrice(taxCalculation.totalTax)}</span>
                 </div>
                 <div className="flex justify-between">
@@ -535,10 +535,6 @@ const Checkout = () => {
                   <span className={shippingPrice === 0 ? 'text-green-600' : 'text-gray-900'}>
                     {shippingPrice === 0 ? 'FREE' : formatPrice(shippingPrice)}
                   </span>
-                </div>
-                <div className="text-xs text-gray-400 italic bg-gray-100 p-2 rounded">
-                  <p>* Items ≤ ₹2,500: 5% GST</p>
-                  <p>* Items &gt; ₹2,500: 18% GST</p>
                 </div>
                 <div className="border-t border-gray-200 pt-4 flex justify-between text-base font-medium">
                   <span className="text-gray-900">Total</span>
