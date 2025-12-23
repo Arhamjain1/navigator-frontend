@@ -1,108 +1,51 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingBag, Trash2, ChevronRight } from 'lucide-react';
-import { productsAPI, wishlistAPI } from '../utils/api';
-import { useAuth } from '../context/AuthContext';
+import { productsAPI } from '../utils/api';
+import { useWishlist } from '../context/WishlistContext';
 import { formatPrice } from '../utils/helpers';
 import Loading from '../components/Loading';
 
 const Wishlist = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = useAuth();
+  const { wishlistItems, removeFromWishlist, clearWishlist } = useWishlist();
 
   useEffect(() => {
     const fetchWishlistProducts = async () => {
+      if (wishlistItems.length === 0) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      
       try {
-        if (isAuthenticated) {
-          // Fetch from backend for logged-in users
-          const response = await wishlistAPI.get();
-          setProducts(response.data);
-        } else {
-          // Use localStorage for guests
-          const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-          
-          if (savedWishlist.length > 0) {
-            // Handle both old format (objects) and new format (string IDs)
-            const productIds = savedWishlist.map(item => 
-              typeof item === 'object' && item._id ? item._id : item
-            ).filter(id => typeof id === 'string' && id.length > 0);
-            
-            // Normalize localStorage to use only IDs
-            localStorage.setItem('wishlist', JSON.stringify(productIds));
-            
-            const productPromises = productIds.map(id => 
-              productsAPI.getById(id).catch(() => null)
-            );
-            const responses = await Promise.all(productPromises);
-            const validProducts = responses
-              .filter(res => res && res.data)
-              .map(res => res.data);
-            setProducts(validProducts);
-          }
-        }
+        const productPromises = wishlistItems.map(id => 
+          productsAPI.getById(id).catch(() => null)
+        );
+        const responses = await Promise.all(productPromises);
+        const validProducts = responses
+          .filter(res => res && res.data)
+          .map(res => res.data);
+        setProducts(validProducts);
       } catch (error) {
-        console.error('Error fetching wishlist:', error);
-        // Fallback to localStorage on error
-        const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        if (savedWishlist.length > 0) {
-          // Handle both old format (objects) and new format (string IDs)
-          const productIds = savedWishlist.map(item => 
-            typeof item === 'object' && item._id ? item._id : item
-          ).filter(id => typeof id === 'string' && id.length > 0);
-          
-          const productPromises = productIds.map(id => 
-            productsAPI.getById(id).catch(() => null)
-          );
-          const responses = await Promise.all(productPromises);
-          const validProducts = responses
-            .filter(res => res && res.data)
-            .map(res => res.data);
-          setProducts(validProducts);
-        }
+        console.error('Error fetching wishlist products:', error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchWishlistProducts();
-  }, [isAuthenticated]);
+  }, [wishlistItems]);
 
-  const removeFromWishlist = async (productId) => {
-    try {
-      if (isAuthenticated) {
-        const response = await wishlistAPI.remove(productId);
-        setProducts(response.data);
-      } else {
-        const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-        const newWishlist = savedWishlist.filter(id => id !== productId);
-        localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-        setProducts(products.filter(p => p._id !== productId));
-      }
-    } catch (error) {
-      console.error('Error removing from wishlist:', error);
-      // Fallback to localStorage
-      const savedWishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
-      const newWishlist = savedWishlist.filter(id => id !== productId);
-      localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-      setProducts(products.filter(p => p._id !== productId));
-    }
+  const handleRemove = async (productId) => {
+    await removeFromWishlist(productId);
+    setProducts(products.filter(p => p._id !== productId));
   };
 
-  const clearWishlist = async () => {
-    try {
-      if (isAuthenticated) {
-        await wishlistAPI.clear();
-        setProducts([]);
-      } else {
-        localStorage.setItem('wishlist', JSON.stringify([]));
-        setProducts([]);
-      }
-    } catch (error) {
-      console.error('Error clearing wishlist:', error);
-      localStorage.setItem('wishlist', JSON.stringify([]));
-      setProducts([]);
-    }
+  const handleClearAll = async () => {
+    await clearWishlist();
+    setProducts([]);
   };
 
   if (loading) return <Loading fullScreen />;
@@ -150,7 +93,7 @@ const Wishlist = () => {
             <p className="text-sm text-neutral-500">{products.length} {products.length === 1 ? 'item' : 'items'}</p>
             {products.length > 0 && (
               <button 
-                onClick={clearWishlist}
+                onClick={handleClearAll}
                 className="text-sm text-red-500 hover:text-red-700 transition-colors"
               >
                 Clear All
@@ -178,7 +121,7 @@ const Wishlist = () => {
                   <button
                     onClick={(e) => {
                       e.preventDefault();
-                      removeFromWishlist(product._id);
+                      handleRemove(product._id);
                     }}
                     className="absolute top-3 right-3 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-red-50 transition-colors"
                   >

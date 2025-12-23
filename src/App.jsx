@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -34,6 +35,7 @@ function App() {
       <ScrollToTop />
       <AuthProvider>
         <CartProvider>
+          <WishlistProvider>
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
@@ -63,6 +65,7 @@ function App() {
               },
             }}
           />
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </Router>

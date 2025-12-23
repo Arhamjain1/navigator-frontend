@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Minus, Plus, Heart, ChevronRight, Check, Truck, RotateCcw, Shield, Share2 } from 'lucide-react';
 import { productsAPI } from '../utils/api';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 import { formatPrice, calculateDiscount } from '../utils/helpers';
 import Loading from '../components/Loading';
 import ProductCard from '../components/ProductCard';
@@ -11,6 +12,7 @@ import toast from 'react-hot-toast';
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -271,8 +273,19 @@ const ProductDetail = () => {
               >
                 {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
-              <button className="p-4 border border-neutral-200 hover:border-black hover:bg-black hover:text-white transition-all duration-300">
-                <Heart size={20} strokeWidth={1.5} />
+              <button 
+                onClick={() => toggleWishlist(product._id)}
+                className={`p-4 border transition-all duration-300 ${
+                  isInWishlist(product._id)
+                    ? 'bg-red-50 border-red-200 text-red-500'
+                    : 'border-neutral-200 hover:border-black hover:bg-black hover:text-white'
+                }`}
+              >
+                <Heart 
+                  size={20} 
+                  strokeWidth={1.5} 
+                  fill={isInWishlist(product._id) ? 'currentColor' : 'none'}
+                />
               </button>
             </div>
 

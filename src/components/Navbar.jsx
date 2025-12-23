@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Menu, X, ShoppingBag, User, Search, ChevronDown, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,7 @@ const Navbar = () => {
   const [showCategories, setShowCategories] = useState(false);
   const { user, isAdmin, logout } = useAuth();
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const location = useLocation();
 
   const categories = [
@@ -147,6 +149,11 @@ const Navbar = () => {
               aria-label="Wishlist"
             >
               <Heart size={20} strokeWidth={1.5} />
+              {wishlistCount > 0 && (
+                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             <Link
