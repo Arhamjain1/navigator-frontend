@@ -122,7 +122,17 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error('Error placing order:', error);
-      toast.error(error.response?.data?.message || 'Failed to place order');
+      
+      // Handle stock errors specifically
+      if (error.response?.data?.stockErrors) {
+        const stockErrors = error.response.data.stockErrors;
+        const errorMessages = stockErrors.map(err => err.error).join('\n');
+        toast.error(errorMessages, { duration: 5000 });
+        // Redirect back to cart so user can update quantities
+        navigate('/cart');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to place order');
+      }
     } finally {
       setLoading(false);
     }
