@@ -1,9 +1,52 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { formatPrice, calculateDiscount } from '../utils/helpers';
+import toast from 'react-hot-toast';
 
 const ProductCard = ({ product, variant = 'default' }) => {
+  const navigate = useNavigate();
   const discount = calculateDiscount(product.originalPrice, product.price);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // Check if product is in wishlist on mount
+  useEffect(() => {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    setIsWishlisted(wishlist.some(item => item._id === product._id));
+  }, [product._id]);
+
+  // Handle wishlist toggle
+  const handleWishlist = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    
+    if (isWishlisted) {
+      const newWishlist = wishlist.filter(item => item._id !== product._id);
+      localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+      setIsWishlisted(false);
+      toast.success('Removed from wishlist');
+    } else {
+      wishlist.push(product);
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      setIsWishlisted(true);
+      toast.success('Added to wishlist!');
+    }
+  };
+
+  // Handle quick view - redirect to product page
+  const handleQuickView = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/product/${product._id}`);
+  };
+
+  // Handle add to cart - redirect to product page to select size/color
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/product/${product._id}`);
+  };
 
   // Different sizes for different contexts
   const aspectRatio = variant === 'featured' ? 'aspect-[4/5]' : 'aspect-[3/4]';
@@ -48,20 +91,16 @@ const ProductCard = ({ product, variant = 'default' }) => {
           {/* Action Buttons - Right Side */}
           <div className="absolute top-4 right-4 flex flex-col gap-2">
             <button
-              className="p-2.5 bg-white/90 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 hover:bg-black hover:text-white"
+              className={`p-2.5 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ${isWishlisted ? 'bg-red-500 text-white' : 'bg-white/90 hover:bg-black hover:text-white'}`}
               aria-label="Add to wishlist"
-              onClick={(e) => {
-                e.preventDefault();
-              }}
+              onClick={handleWishlist}
             >
-              <Heart size={16} strokeWidth={1.5} />
+              <Heart size={16} strokeWidth={1.5} fill={isWishlisted ? 'currentColor' : 'none'} />
             </button>
             <button
               className="p-2.5 bg-white/90 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-75 hover:bg-black hover:text-white"
               aria-label="Quick view"
-              onClick={(e) => {
-                e.preventDefault();
-              }}
+              onClick={handleQuickView}
             >
               <Eye size={16} strokeWidth={1.5} />
             </button>
@@ -72,13 +111,10 @@ const ProductCard = ({ product, variant = 'default' }) => {
             <button
               className="w-full bg-white/95 backdrop-blur-sm text-black py-3.5 text-xs font-semibold uppercase tracking-[0.2em] hover:bg-black hover:text-white transition-colors duration-300 flex items-center justify-center gap-2"
               aria-label="Add to cart"
-              onClick={(e) => {
-                e.preventDefault();
-                // Add to cart logic would go here
-              }}
+              onClick={handleAddToCart}
             >
               <ShoppingBag size={14} strokeWidth={1.5} />
-              Add to Cart
+              Quick View
             </button>
           </div>
         </div>
