@@ -113,7 +113,7 @@ const Home = () => {
           <img
             src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=1920&h=1280&fit=crop&q=90"
             alt="Hero"
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
         </div>
