@@ -200,7 +200,19 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="lg:hidden fixed inset-0 top-16 bg-white z-50 overflow-y-auto animate-fade-in">
+          <div className="lg:hidden fixed inset-0 top-0 bg-white z-[60] overflow-y-auto animate-fade-in">
+            {/* Mobile Header with Close Button */}
+            <div className="sticky top-0 bg-white border-b border-neutral-100 h-16 flex items-center justify-between px-4 z-10">
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-2 text-black"
+                aria-label="Close menu"
+              >
+                <X size={24} />
+              </button>
+              <span className="font-display text-2xl">NAVIGATOR</span>
+              <div className="w-10" /> {/* Spacer for centering */}
+            </div>
             <div className="container-custom py-8">
               <div className="flex flex-col space-y-1">
                 <Link

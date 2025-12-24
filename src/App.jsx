@@ -56,12 +56,36 @@ function App() {
             <Footer />
           </div>
           <Toaster
-            position="bottom-right"
+            position="top-center"
+            containerStyle={{
+              top: 80,
+            }}
             toastOptions={{
               duration: 3000,
               style: {
-                background: '#171717',
+                background: '#000',
                 color: '#fff',
+                padding: '16px 24px',
+                borderRadius: '0',
+                fontSize: '14px',
+                fontWeight: '500',
+                maxWidth: '400px',
+                textAlign: 'center',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#fff',
+                  secondary: '#000',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#fff',
+                  secondary: '#000',
+                },
+                style: {
+                  background: '#dc2626',
+                },
               },
             }}
           />

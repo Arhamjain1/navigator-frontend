@@ -3,7 +3,7 @@ import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { CreditCard, Truck, Check, Mail } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ordersAPI } from '../utils/api';
+import { ordersAPI, productsAPI } from '../utils/api';
 import { formatPrice } from '../utils/helpers';
 import toast from 'react-hot-toast';
 
@@ -11,11 +11,12 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const isGuestCheckout = searchParams.get('guest') === 'true';
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, updateQuantity, removeFromCart } = useCart();
   const { user, isAuthenticated } = useAuth();
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [guestEmail, setGuestEmail] = useState('');
+  const [stockIssues, setStockIssues] = useState([]);
   
   const [shippingAddress, setShippingAddress] = useState({
     fullName: user?.name || '',
@@ -126,10 +127,49 @@ const Checkout = () => {
       // Handle stock errors specifically
       if (error.response?.data?.stockErrors) {
         const stockErrors = error.response.data.stockErrors;
-        const errorMessages = stockErrors.map(err => err.error).join('\n');
-        toast.error(errorMessages, { duration: 5000 });
-        // Redirect back to cart so user can update quantities
-        navigate('/cart');
+        const issues = [];
+        
+        // Process each stock error and update cart accordingly
+        for (const err of stockErrors) {
+          const cartItem = cart.items.find(item => 
+            item.product?._id === err.productId && item.size === err.size
+          );
+          
+          if (cartItem) {
+            if (err.available === 0) {
+              // Item is out of stock - mark for removal
+              issues.push({
+                ...err,
+                action: 'remove',
+                itemId: cartItem._id
+              });
+              // Remove the item from cart
+              await removeFromCart(cartItem._id);
+            } else if (err.available < cartItem.quantity) {
+              // Partial stock available - update quantity
+              issues.push({
+                ...err,
+                action: 'update',
+                itemId: cartItem._id,
+                oldQuantity: cartItem.quantity
+              });
+              // Update to available quantity
+              await updateQuantity(cartItem._id, err.available);
+            }
+          }
+        }
+        
+        setStockIssues(issues);
+        
+        // Show detailed message
+        if (issues.some(i => i.action === 'remove')) {
+          toast.error('Some items are now out of stock and have been removed from your cart');
+        } else {
+          toast.error('Some item quantities have been adjusted due to limited stock');
+        }
+        
+        // Go back to step 1 to review changes
+        setStep(1);
       } else {
         toast.error(error.response?.data?.message || 'Failed to place order');
       }
@@ -137,6 +177,9 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  // Check if cart has any items with stock issues
+  const hasStockIssues = stockIssues.length > 0;
 
   // Redirect non-authenticated users without guest flag to cart
   if (!isAuthenticated && !isGuestCheckout) {

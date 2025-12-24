@@ -108,7 +108,7 @@ const Home = () => {
       </div>
 
       {/* Hero Section - Full Width Immersive */}
-      <section className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden bg-neutral-900">
+      <section className="relative w-full min-h-[70vh] md:min-h-0 md:aspect-[21/9] overflow-hidden bg-neutral-900">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=90"
@@ -118,10 +118,10 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         </div>
         
-        <div className="relative h-full flex items-center">
+        <div className="relative h-full flex items-center pt-24 md:pt-0">
           <div className="container-custom">
             <div className="max-w-2xl">
-              <p className="text-white/80 text-sm md:text-base uppercase tracking-[0.3em] mb-4 animate-fade-in">
+              <p className="text-white/80 text-xs md:text-base uppercase tracking-[0.3em] mb-4 animate-fade-in">
                 {heroSlides[0].description}
               </p>
               <h1 className="hero-title text-white mb-2 animate-slide-up">
