@@ -1,8 +1,16 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Instagram, Facebook, Twitter, Youtube, ArrowRight, MapPin, Phone, Mail } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const navigate = useNavigate();
+
+  // Custom navigation that scrolls to top
+  const handleNavigation = (to) => (e) => {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    navigate(to);
+  };
 
   return (
     <footer className="bg-black text-white">
@@ -19,15 +27,15 @@ const Footer = () => {
               </p>
             </div>
             <div>
-              <form className="flex gap-0">
+              <form className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
                   placeholder="Enter your email address"
-                  className="flex-1 bg-transparent border border-neutral-700 px-6 py-4 text-sm focus:outline-none focus:border-white transition-colors placeholder:text-neutral-500"
+                  className="flex-1 bg-transparent border border-neutral-700 px-4 py-3 text-sm focus:outline-none focus:border-white transition-colors placeholder:text-neutral-500 w-full"
                 />
                 <button 
                   type="submit"
-                  className="bg-white text-black px-8 py-4 text-sm font-semibold tracking-wider hover:bg-neutral-200 transition-colors flex items-center gap-2"
+                  className="bg-white text-black px-6 py-3 sm:px-8 sm:py-4 text-sm font-semibold tracking-wider hover:bg-neutral-200 transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
                 >
                   SUBSCRIBE
                   <ArrowRight size={16} />
@@ -72,24 +80,24 @@ const Footer = () => {
             <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-6">Shop</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/shop?tag=new-arrivals" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?tag=new-arrivals" onClick={handleNavigation('/shop?tag=new-arrivals')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   New Arrivals
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/shop?tag=bestseller" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?tag=bestseller" onClick={handleNavigation('/shop?tag=bestseller')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Bestsellers
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/shop" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop" onClick={handleNavigation('/shop')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   All Products
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/shop?sale=true" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?sale=true" onClick={handleNavigation('/shop?sale=true')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Sale
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -99,24 +107,24 @@ const Footer = () => {
             <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-6">Categories</h4>
             <ul className="space-y-3">
               <li>
-                <Link to="/shop?category=t-shirts" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?category=t-shirts" onClick={handleNavigation('/shop?category=t-shirts')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   T-Shirts
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/shop?category=shirts" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?category=shirts" onClick={handleNavigation('/shop?category=shirts')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Shirts
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/shop?category=jeans" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?category=jeans" onClick={handleNavigation('/shop?category=jeans')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Jeans
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="/shop?category=jackets" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shop?category=jackets" onClick={handleNavigation('/shop?category=jackets')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Jackets
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -126,22 +134,22 @@ const Footer = () => {
             <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-400 mb-6">Support</h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/help-center" onClick={handleNavigation('/help-center')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Help Center
                 </a>
               </li>
               <li>
-                <a href="#" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/shipping-info" onClick={handleNavigation('/shipping-info')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Shipping Info
                 </a>
               </li>
               <li>
-                <a href="#" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/returns-exchanges" onClick={handleNavigation('/returns-exchanges')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Returns & Exchanges
                 </a>
               </li>
               <li>
-                <a href="#" className="text-neutral-300 hover:text-white transition-colors text-sm">
+                <a href="/size-guide" onClick={handleNavigation('/size-guide')} className="text-neutral-300 hover:text-white transition-colors text-sm">
                   Size Guide
                 </a>
               </li>
@@ -177,13 +185,13 @@ const Footer = () => {
               © {currentYear} NAVIGATOR. All rights reserved.
             </p>
             <div className="flex items-center gap-6">
-              <a href="#" className="text-neutral-500 hover:text-white text-xs tracking-wide transition-colors">
+              <a href="/privacy-policy" onClick={handleNavigation('/privacy-policy')} className="text-neutral-500 hover:text-white text-xs tracking-wide transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-neutral-500 hover:text-white text-xs tracking-wide transition-colors">
+              <a href="/terms-of-service" onClick={handleNavigation('/terms-of-service')} className="text-neutral-500 hover:text-white text-xs tracking-wide transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="text-neutral-500 hover:text-white text-xs tracking-wide transition-colors">
+              <a href="/cookies" onClick={handleNavigation('/cookies')} className="text-neutral-500 hover:text-white text-xs tracking-wide transition-colors">
                 Cookies
               </a>
             </div>

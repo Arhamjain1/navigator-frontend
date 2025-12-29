@@ -78,13 +78,8 @@ const Login = () => {
       </div>
 
       {/* Right Side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white pt-24 lg:pt-8">
         <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <Link to="/" className="lg:hidden font-display text-3xl tracking-tight text-black mb-10 block text-center">
-            NAVIGATOR
-          </Link>
-
           <div className="mb-10">
             <h1 className="font-display text-3xl md:text-4xl tracking-tight mb-3">Welcome Back</h1>
             <p className="text-neutral-500 text-sm">Sign in to continue shopping</p>

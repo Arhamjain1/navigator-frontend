@@ -1,19 +1,12 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { cartAPI } from '../utils/api';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
-const CartContext = createContext();
+const CartContext = createContext(null);
 
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
-};
-
-export const CartProvider = ({ children }) => {
+// CartProvider component
+function CartProvider({ children }) {
   const [cart, setCart] = useState({ items: [], totalAmount: 0 });
   const [loading, setLoading] = useState(false);
   const { isAuthenticated } = useAuth();
@@ -179,43 +172,53 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const updateQuantity = async (itemId, quantity, maxStock = null) => {
-    try {
-      // Check if quantity exceeds stock
-      if (maxStock !== null && quantity > maxStock) {
-        toast.error(`Only ${maxStock} available`);
-        return;
-      }
-      
-      if (isAuthenticated) {
-        const response = await cartAPI.update(itemId, { quantity });
-        setCart(response.data);
-      } else {
-        const newItems = cart.items
-          .map((item) =>
-            item._id === itemId ? { ...item, quantity } : item
-          )
-          .filter((item) => item.quantity > 0);
-
-        const totalAmount = newItems.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        );
-
-        saveLocalCart({ items: newItems, totalAmount });
-      }
-    } catch (error) {
-      console.error('Error updating cart:', error);
-      toast.error('Failed to update cart');
+  const updateQuantity = useCallback(async (itemId, quantity, maxStock = null, suppressToast = false) => {
+    // Check if quantity exceeds stock
+    if (maxStock !== null && quantity > maxStock) {
+      if (!suppressToast) toast.error(`Only ${maxStock} available`);
+      return;
     }
-  };
+    
+    // Optimistic UI update - update state immediately
+    setCart(prevCart => {
+      const newItems = prevCart.items
+        .map((item) =>
+          item._id === itemId ? { ...item, quantity } : item
+        )
+        .filter((item) => item.quantity > 0);
 
-  const removeFromCart = async (itemId) => {
+      const totalAmount = newItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
+
+      // Also update localStorage for guests immediately
+      if (!isAuthenticated) {
+        localStorage.setItem('cart', JSON.stringify({ items: newItems, totalAmount }));
+      }
+
+      return { items: newItems, totalAmount };
+    });
+    
+    // Then sync with server for authenticated users
+    if (isAuthenticated) {
+      try {
+        await cartAPI.update(itemId, { quantity });
+      } catch (error) {
+        console.error('Error updating cart:', error);
+        if (!suppressToast) toast.error('Failed to update cart');
+        // Refetch cart to get correct state on error
+        fetchCart();
+      }
+    }
+  }, [isAuthenticated]);
+
+  const removeFromCart = async (itemId, suppressToast = false) => {
     try {
       if (isAuthenticated) {
         const response = await cartAPI.remove(itemId);
         setCart(response.data);
-        toast.success('Removed from cart');
+        if (!suppressToast) toast.success('Removed from cart');
       } else {
         const newItems = cart.items.filter((item) => item._id !== itemId);
         const totalAmount = newItems.reduce(
@@ -223,11 +226,11 @@ export const CartProvider = ({ children }) => {
           0
         );
         saveLocalCart({ items: newItems, totalAmount });
-        toast.success('Removed from cart');
+        if (!suppressToast) toast.success('Removed from cart');
       }
     } catch (error) {
       console.error('Error removing from cart:', error);
-      toast.error('Failed to remove from cart');
+      if (!suppressToast) toast.error('Failed to remove from cart');
     }
   };
 
@@ -257,4 +260,15 @@ export const CartProvider = ({ children }) => {
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
-};
+}
+
+// Custom hook to use cart context
+function useCart() {
+  const context = useContext(CartContext);
+  if (!context) {
+    throw new Error('useCart must be used within a CartProvider');
+  }
+  return context;
+}
+
+export { CartProvider, useCart };

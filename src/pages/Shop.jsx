@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { SlidersHorizontal, X, ChevronDown, Grid3X3, LayoutGrid, ChevronRight } from 'lucide-react';
 import { productsAPI } from '../utils/api';
@@ -12,6 +12,7 @@ const Shop = () => {
   const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [gridCols, setGridCols] = useState(4);
+  const productsRef = useRef(null);
 
   const categories = [
     { value: 'all', label: 'All Products' },
@@ -82,6 +83,16 @@ const Shop = () => {
       newParams.delete('page');
     }
     setSearchParams(newParams);
+    // Scroll to products grid start (not the absolute top)
+    setTimeout(() => {
+      const el = productsRef.current;
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 120; // account for navbar
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   const clearFilters = () => {
@@ -371,7 +382,7 @@ const Shop = () => {
           </aside>
 
           {/* Products Grid */}
-          <div className="flex-1">
+          <div className="flex-1" ref={productsRef}>
             {loading ? (
               <Loading />
             ) : products.length === 0 ? (

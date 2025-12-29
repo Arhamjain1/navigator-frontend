@@ -74,6 +74,7 @@ const Checkout = () => {
       return;
     }
     setStep(2);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePlaceOrder = async () => {
@@ -127,7 +128,8 @@ const Checkout = () => {
       // Handle stock errors specifically
       if (error.response?.data?.stockErrors) {
         const stockErrors = error.response.data.stockErrors;
-        const issues = [];
+        let hasRemovals = false;
+        let hasUpdates = false;
         
         // Process each stock error and update cart accordingly
         for (const err of stockErrors) {
@@ -137,39 +139,26 @@ const Checkout = () => {
           
           if (cartItem) {
             if (err.available === 0) {
-              // Item is out of stock - mark for removal
-              issues.push({
-                ...err,
-                action: 'remove',
-                itemId: cartItem._id
-              });
-              // Remove the item from cart
-              await removeFromCart(cartItem._id);
+              hasRemovals = true;
+              // Remove the item from cart (silent to avoid duplicate toasts)
+              await removeFromCart(cartItem._id, true);
             } else if (err.available < cartItem.quantity) {
-              // Partial stock available - update quantity
-              issues.push({
-                ...err,
-                action: 'update',
-                itemId: cartItem._id,
-                oldQuantity: cartItem.quantity
-              });
-              // Update to available quantity
-              await updateQuantity(cartItem._id, err.available);
+              hasUpdates = true;
+              // Update to available quantity (silent)
+              await updateQuantity(cartItem._id, err.available, null, true);
             }
           }
         }
         
-        setStockIssues(issues);
-        
-        // Show detailed message
-        if (issues.some(i => i.action === 'remove')) {
-          toast.error('Some items are now out of stock and have been removed from your cart');
-        } else {
+        // Show single message and redirect to cart
+        if (hasRemovals) {
+          toast.error('Some items are out of stock and have been removed from your cart');
+        } else if (hasUpdates) {
           toast.error('Some item quantities have been adjusted due to limited stock');
         }
         
-        // Go back to step 1 to review changes
-        setStep(1);
+        // Redirect to cart page to review changes
+        navigate('/cart');
       } else {
         toast.error(error.response?.data?.message || 'Failed to place order');
       }
@@ -464,13 +453,13 @@ const Checkout = () => {
 
                 <div className="flex gap-4">
                   <button
-                    onClick={() => setStep(1)}
+                    onClick={() => { setStep(1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className="btn-secondary"
                   >
                     Back
                   </button>
                   <button
-                    onClick={() => setStep(3)}
+                    onClick={() => { setStep(3); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                     className="btn-primary"
                   >
                     Review Order

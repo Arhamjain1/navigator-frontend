@@ -17,14 +17,19 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Admin from './pages/Admin';
+import HelpCenter from './pages/HelpCenter';
+import ShippingInfo from './pages/ShippingInfo';
+import ReturnsExchanges from './pages/ReturnsExchanges';
+import SizeGuide from './pages/SizeGuide';
 
 // Scroll to top on route change (only pathname, not search params)
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
+    // Scroll to top on any route change including search params
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-  }, [pathname]);
+  }, [location.pathname, location.search]);
 
   return null;
 }
@@ -51,6 +56,10 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/help-center" element={<HelpCenter />} />
+                <Route path="/shipping-info" element={<ShippingInfo />} />
+                <Route path="/returns-exchanges" element={<ReturnsExchanges />} />
+                <Route path="/size-guide" element={<SizeGuide />} />
               </Routes>
             </main>
             <Footer />
@@ -79,6 +88,7 @@ function App() {
                 },
               },
               error: {
+                duration: 4000,
                 iconTheme: {
                   primary: '#fff',
                   secondary: '#000',
