@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Minus, Plus, Heart, ChevronRight, ChevronLeft, Check, Truck, RotateCcw, Shield, Share2 } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Minus, Plus, Heart, ChevronRight, ChevronLeft, Check, Truck, RotateCcw, Shield, Share2, Zap } from 'lucide-react';
 import { productsAPI } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { formatPrice, calculateDiscount } from '../utils/helpers';
 import Loading from '../components/Loading';
 import ProductCard from '../components/ProductCard';
+import CartDrawer from '../components/CartDrawer';
 import toast from 'react-hot-toast';
 
 const ProductDetail = () => {
   const { id } = useParams();
-  const { addToCart } = useCart();
+  const navigate = useNavigate();
+  const { addToCart, lastAddedItem, clearLastAddedItem } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -21,6 +23,7 @@ const ProductDetail = () => {
   const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('details');
+  const [showCartDrawer, setShowCartDrawer] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -104,7 +107,7 @@ const ProductDetail = () => {
     return getStockForSize(selectedSize);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       toast.error('Please select a size');
       return;
@@ -114,7 +117,31 @@ const ProductDetail = () => {
       toast.error(`Only ${maxQty} item(s) available in size ${selectedSize}`);
       return;
     }
-    addToCart(product, quantity, selectedSize, selectedColor);
+    const success = await addToCart(product, quantity, selectedSize, selectedColor);
+    if (success) {
+      setShowCartDrawer(true);
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!selectedSize) {
+      toast.error('Please select a size');
+      return;
+    }
+    const maxQty = getMaxQuantity();
+    if (quantity > maxQty) {
+      toast.error(`Only ${maxQty} item(s) available in size ${selectedSize}`);
+      return;
+    }
+    const success = await addToCart(product, quantity, selectedSize, selectedColor);
+    if (success) {
+      navigate('/checkout');
+    }
+  };
+
+  const handleCloseDrawer = () => {
+    setShowCartDrawer(false);
+    clearLastAddedItem();
   };
 
   if (loading) return <Loading fullScreen />;
@@ -367,14 +394,22 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Add to Cart */}
+            {/* Add to Cart & Buy Now */}
             <div className="flex gap-3 mb-10">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-black text-white py-4 px-8 text-sm font-semibold uppercase tracking-[0.15em] hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-black text-white py-4 px-6 text-sm font-semibold uppercase tracking-[0.15em] hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!selectedSize || getMaxQuantity() === 0}
               >
                 {!selectedSize ? 'Select a Size' : getMaxQuantity() === 0 ? 'Out of Stock' : 'Add to Cart'}
+              </button>
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 border-2 border-black text-black py-4 px-6 text-sm font-semibold uppercase tracking-[0.15em] hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                disabled={!selectedSize || getMaxQuantity() === 0}
+              >
+                <Zap size={16} />
+                Buy Now
               </button>
               <button 
                 onClick={() => toggleWishlist(product._id)}
@@ -532,6 +567,13 @@ const ProductDetail = () => {
           </section>
         )}
       </div>
+
+      {/* Cart Drawer */}
+      <CartDrawer 
+        isOpen={showCartDrawer} 
+        onClose={handleCloseDrawer} 
+        addedItem={lastAddedItem}
+      />
     </div>
   );
 };

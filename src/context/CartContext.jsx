@@ -9,6 +9,7 @@ const CartContext = createContext(null);
 function CartProvider({ children }) {
   const [cart, setCart] = useState({ items: [], totalAmount: 0 });
   const [loading, setLoading] = useState(false);
+  const [lastAddedItem, setLastAddedItem] = useState(null);
   const { isAuthenticated } = useAuth();
   const prevAuthState = useRef(isAuthenticated);
 
@@ -130,7 +131,8 @@ function CartProvider({ children }) {
           color,
         });
         setCart(response.data);
-        toast.success('Added to cart!');
+        // Track the added item for drawer
+        setLastAddedItem({ product, quantity, size, color });
       } else {
         // Handle local cart for non-authenticated users
         const existingItemIndex = cart.items.findIndex(
@@ -164,11 +166,14 @@ function CartProvider({ children }) {
         );
 
         saveLocalCart({ items: newItems, totalAmount });
-        toast.success('Added to cart!');
+        // Track the added item for drawer
+        setLastAddedItem({ product, quantity, size, color });
       }
+      return true; // Success
     } catch (error) {
       console.error('Error adding to cart:', error);
       toast.error('Failed to add to cart');
+      return false; // Failure
     }
   };
 
@@ -248,6 +253,8 @@ function CartProvider({ children }) {
 
   const cartCount = cart.items.reduce((total, item) => total + item.quantity, 0);
 
+  const clearLastAddedItem = () => setLastAddedItem(null);
+
   const value = {
     cart,
     loading,
@@ -257,6 +264,8 @@ function CartProvider({ children }) {
     clearCart,
     cartCount,
     fetchCart,
+    lastAddedItem,
+    clearLastAddedItem,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
