@@ -395,17 +395,17 @@ const ProductDetail = () => {
             </div>
 
             {/* Add to Cart & Buy Now */}
-            <div className="flex gap-3 mb-10">
+            <div className="flex flex-col sm:flex-row gap-3 mb-10">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 bg-black text-white py-4 px-6 text-sm font-semibold uppercase tracking-[0.15em] hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-black text-white py-4 px-4 text-xs sm:text-sm font-semibold uppercase tracking-wider sm:tracking-[0.15em] hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                 disabled={!selectedSize || getMaxQuantity() === 0}
               >
-                {!selectedSize ? 'Select a Size' : getMaxQuantity() === 0 ? 'Out of Stock' : 'Add to Cart'}
+                {!selectedSize ? 'Select Size' : getMaxQuantity() === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
               <button
                 onClick={handleBuyNow}
-                className="flex-1 border-2 border-black text-black py-4 px-6 text-sm font-semibold uppercase tracking-[0.15em] hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 border-2 border-black text-black py-4 px-4 text-xs sm:text-sm font-semibold uppercase tracking-wider sm:tracking-[0.15em] hover:bg-black hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 whitespace-nowrap"
                 disabled={!selectedSize || getMaxQuantity() === 0}
               >
                 <Zap size={16} />
@@ -413,7 +413,7 @@ const ProductDetail = () => {
               </button>
               <button 
                 onClick={() => toggleWishlist(product._id)}
-                className={`p-4 border transition-all duration-300 ${
+                className={`p-4 border transition-all duration-300 flex-shrink-0 ${
                   isInWishlist(product._id)
                     ? 'bg-red-50 border-red-200 text-red-500'
                     : 'border-neutral-200 hover:border-black hover:bg-black hover:text-white'
