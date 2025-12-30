@@ -150,7 +150,7 @@ const Navbar = () => {
             >
               <Heart size={20} strokeWidth={1.5} />
               {wishlistCount > 0 && (
-                <span className="absolute top-1 right-1 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-medium">
+                <span className="absolute -top-0.5 -right-0.5 bg-black text-white text-[9px] min-w-[16px] h-4 px-1 flex items-center justify-center font-medium">
                   {wishlistCount}
                 </span>
               )}
@@ -182,7 +182,7 @@ const Navbar = () => {
 
         {/* Search Bar */}
         {searchOpen && (
-          <div className="py-6 bg-white border-t border-neutral-100 animate-slide-down">
+          <div className="py-6 px-4 bg-white border-t border-neutral-100 animate-slide-down">
             <form action="/shop" className="flex gap-3 max-w-2xl mx-auto">
               <input
                 type="text"

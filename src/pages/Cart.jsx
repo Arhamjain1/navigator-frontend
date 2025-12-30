@@ -258,7 +258,7 @@ const Cart = () => {
                 </div>
                 <div className="flex items-center gap-3 text-xs text-neutral-500">
                   <RotateCcw size={14} />
-                  <span>30-day returns</span>
+                  <span>7-day returns</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-neutral-500">
                   <Truck size={14} />

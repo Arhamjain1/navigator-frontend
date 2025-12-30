@@ -16,7 +16,7 @@ const ReturnsExchanges = () => {
           </nav>
           <h1 className="font-display text-4xl md:text-6xl tracking-tight mb-4">Returns & Exchanges</h1>
           <p className="text-neutral-400 text-lg max-w-xl">
-            Easy returns within 30 days. Your satisfaction is our priority.
+            Easy returns within 7 days. Your satisfaction is our priority.
           </p>
         </div>
       </div>
@@ -28,8 +28,8 @@ const ReturnsExchanges = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center p-8 border border-neutral-200">
                 <Clock size={40} className="mx-auto mb-4 text-neutral-700" />
-                <h3 className="font-display text-xl mb-2">30-Day Returns</h3>
-                <p className="text-neutral-500 text-sm">Return any item within 30 days of delivery</p>
+                <h3 className="font-display text-xl mb-2">7-Day Returns</h3>
+                <p className="text-neutral-500 text-sm">Return any item within 7 days of delivery</p>
               </div>
               <div className="text-center p-8 border border-neutral-200">
                 <RefreshCw size={40} className="mx-auto mb-4 text-neutral-700" />
@@ -64,7 +64,7 @@ const ReturnsExchanges = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-1">✓</span>
-                    <span>Items returned within 30 days of delivery</span>
+                    <span>Items returned within 7 days of delivery</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-green-600 mt-1">✓</span>

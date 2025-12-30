@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Minus, Plus, Heart, ChevronRight, ChevronLeft, Check, Truck, RotateCcw, Shield, Share2, Zap } from 'lucide-react';
+import { Minus, Plus, Heart, ChevronRight, ChevronLeft, Check, Truck, RotateCcw, Shield, Share2, Zap, Loader2 } from 'lucide-react';
 import { productsAPI } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -14,7 +14,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart, lastAddedItem, clearLastAddedItem } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { isInWishlist, toggleWishlist, isProcessing } = useWishlist();
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -412,18 +412,23 @@ const ProductDetail = () => {
                 Buy Now
               </button>
               <button 
-                onClick={() => toggleWishlist(product._id)}
-                className={`p-4 border transition-all duration-300 flex-shrink-0 ${
+                onClick={() => !isProcessing(product._id) && toggleWishlist(product._id)}
+                disabled={isProcessing(product._id)}
+                className={`p-4 border transition-all duration-300 flex-shrink-0 disabled:opacity-50 ${
                   isInWishlist(product._id)
                     ? 'bg-red-50 border-red-200 text-red-500'
                     : 'border-neutral-200 hover:border-black hover:bg-black hover:text-white'
                 }`}
               >
-                <Heart 
-                  size={20} 
-                  strokeWidth={1.5} 
-                  fill={isInWishlist(product._id) ? 'currentColor' : 'none'}
-                />
+                {isProcessing(product._id) ? (
+                  <Loader2 size={20} strokeWidth={1.5} className="animate-spin" />
+                ) : (
+                  <Heart 
+                    size={20} 
+                    strokeWidth={1.5} 
+                    fill={isInWishlist(product._id) ? 'currentColor' : 'none'}
+                  />
+                )}
               </button>
             </div>
 
@@ -460,7 +465,7 @@ const ProductDetail = () => {
                 <RotateCcw size={20} strokeWidth={1.5} className="text-black" />
                 <div>
                   <p className="text-sm font-medium text-black">Easy Returns</p>
-                  <p className="text-xs text-neutral-500">30-day return policy</p>
+                  <p className="text-xs text-neutral-500">7-day return policy</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 p-4 bg-neutral-50">

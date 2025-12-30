@@ -97,13 +97,13 @@ const Home = () => {
           <span className="mx-8">•</span>
           <span className="mx-8">NEW ARRIVALS EVERY WEEK</span>
           <span className="mx-8">•</span>
-          <span className="mx-8">30-DAY EASY RETURNS</span>
+          <span className="mx-8">7-DAY EASY RETURNS</span>
           <span className="mx-8">•</span>
           <span className="mx-8">FREE SHIPPING ON ORDERS OVER ₹2,999</span>
           <span className="mx-8">•</span>
           <span className="mx-8">NEW ARRIVALS EVERY WEEK</span>
           <span className="mx-8">•</span>
-          <span className="mx-8">30-DAY EASY RETURNS</span>
+          <span className="mx-8">7-DAY EASY RETURNS</span>
         </div>
       </div>
 
@@ -325,7 +325,7 @@ const Home = () => {
             <div className="flex flex-col items-center text-center">
               <RotateCcw className="w-8 h-8 mb-4" strokeWidth={1.5} />
               <h3 className="font-medium mb-1">Easy Returns</h3>
-              <p className="text-white/60 text-sm">30-day return policy</p>
+              <p className="text-white/60 text-sm">7-day return policy</p>
             </div>
             <div className="flex flex-col items-center text-center">
               <Shield className="w-8 h-8 mb-4" strokeWidth={1.5} />

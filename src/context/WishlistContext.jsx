@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { wishlistAPI } from '../utils/api';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
@@ -16,6 +16,7 @@ export const useWishlist = () => {
 export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [processingIds, setProcessingIds] = useState(new Set()); // Track which items are being processed
   const { isAuthenticated } = useAuth();
   const prevAuthState = useRef(isAuthenticated);
 
@@ -91,20 +92,27 @@ export const WishlistProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   // Check if product is in wishlist
-  const isInWishlist = (productId) => {
+  const isInWishlist = useCallback((productId) => {
     return wishlistItems.includes(productId);
-  };
+  }, [wishlistItems]);
 
-  // Add to wishlist
-  const addToWishlist = async (productId) => {
+  // Add to wishlist with debounce protection
+  const addToWishlist = useCallback(async (productId) => {
+    // Prevent duplicate clicks
+    if (processingIds.has(productId)) return false;
+    if (wishlistItems.includes(productId)) return false; // Already in wishlist
+    
+    setProcessingIds(prev => new Set(prev).add(productId));
     try {
       if (isAuthenticated) {
         await wishlistAPI.add(productId);
         setWishlistItems(prev => [...prev, productId]);
       } else {
-        const newWishlist = [...wishlistItems, productId];
-        localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-        setWishlistItems(newWishlist);
+        setWishlistItems(prev => {
+          const newWishlist = [...prev, productId];
+          localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+          return newWishlist;
+        });
       }
       toast.success('Added to wishlist!');
       return true;
@@ -112,19 +120,32 @@ export const WishlistProvider = ({ children }) => {
       console.error('Error adding to wishlist:', error);
       toast.error('Failed to add to wishlist');
       return false;
+    } finally {
+      setProcessingIds(prev => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
     }
-  };
+  }, [isAuthenticated, wishlistItems, processingIds]);
 
-  // Remove from wishlist
-  const removeFromWishlist = async (productId) => {
+  // Remove from wishlist with debounce protection
+  const removeFromWishlist = useCallback(async (productId) => {
+    // Prevent duplicate clicks
+    if (processingIds.has(productId)) return false;
+    if (!wishlistItems.includes(productId)) return false; // Not in wishlist
+    
+    setProcessingIds(prev => new Set(prev).add(productId));
     try {
       if (isAuthenticated) {
         await wishlistAPI.remove(productId);
         setWishlistItems(prev => prev.filter(id => id !== productId));
       } else {
-        const newWishlist = wishlistItems.filter(id => id !== productId);
-        localStorage.setItem('wishlist', JSON.stringify(newWishlist));
-        setWishlistItems(newWishlist);
+        setWishlistItems(prev => {
+          const newWishlist = prev.filter(id => id !== productId);
+          localStorage.setItem('wishlist', JSON.stringify(newWishlist));
+          return newWishlist;
+        });
       }
       toast.success('Removed from wishlist');
       return true;
@@ -132,17 +153,30 @@ export const WishlistProvider = ({ children }) => {
       console.error('Error removing from wishlist:', error);
       toast.error('Failed to remove from wishlist');
       return false;
+    } finally {
+      setProcessingIds(prev => {
+        const next = new Set(prev);
+        next.delete(productId);
+        return next;
+      });
     }
-  };
+  }, [isAuthenticated, wishlistItems, processingIds]);
 
-  // Toggle wishlist
-  const toggleWishlist = async (productId) => {
-    if (isInWishlist(productId)) {
+  // Toggle wishlist with protection
+  const toggleWishlist = useCallback(async (productId) => {
+    if (processingIds.has(productId)) return false; // Already processing
+    
+    if (wishlistItems.includes(productId)) {
       return await removeFromWishlist(productId);
     } else {
       return await addToWishlist(productId);
     }
-  };
+  }, [processingIds, wishlistItems, addToWishlist, removeFromWishlist]);
+
+  // Check if item is being processed
+  const isProcessing = useCallback((productId) => {
+    return processingIds.has(productId);
+  }, [processingIds]);
 
   // Clear wishlist
   const clearWishlist = async () => {
@@ -165,6 +199,7 @@ export const WishlistProvider = ({ children }) => {
     wishlistCount,
     loading,
     isInWishlist,
+    isProcessing,
     addToWishlist,
     removeFromWishlist,
     toggleWishlist,

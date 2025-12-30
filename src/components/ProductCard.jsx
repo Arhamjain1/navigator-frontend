@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingBag, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { formatPrice, calculateDiscount } from '../utils/helpers';
 import { useWishlist } from '../context/WishlistContext';
 
 const ProductCard = ({ product, variant = 'default' }) => {
   const navigate = useNavigate();
-  const { isInWishlist, toggleWishlist } = useWishlist();
+  const { isInWishlist, toggleWishlist, isProcessing } = useWishlist();
   const discount = calculateDiscount(product.originalPrice, product.price);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const images = product.images?.length > 0 ? product.images : ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'];
@@ -24,11 +24,13 @@ const ProductCard = ({ product, variant = 'default' }) => {
     setCurrentImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  // Handle wishlist toggle
+  // Handle wishlist toggle with protection against double-clicks
   const handleWishlist = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    toggleWishlist(product._id);
+    if (!isProcessing(product._id)) {
+      toggleWishlist(product._id);
+    }
   };
 
   // Handle quick view - redirect to product page
@@ -47,6 +49,7 @@ const ProductCard = ({ product, variant = 'default' }) => {
 
   // Consistent aspect ratio across all variants
   const aspectRatio = 'aspect-[3/4]';
+
 
   return (
     <div className="group product-card">
@@ -109,11 +112,16 @@ const ProductCard = ({ product, variant = 'default' }) => {
           {/* Action Buttons - Right Side */}
           <div className="absolute top-4 right-4 flex flex-col gap-2">
             <button
-              className={`p-2.5 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-white/90 hover:bg-black hover:text-white'}`}
+              className={`p-2.5 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 disabled:opacity-50 ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-white/90 hover:bg-black hover:text-white'}`}
               aria-label="Add to wishlist"
               onClick={handleWishlist}
+              disabled={isProcessing(product._id)}
             >
-              <Heart size={16} strokeWidth={1.5} fill={isInWishlist(product._id) ? 'currentColor' : 'none'} />
+              {isProcessing(product._id) ? (
+                <Loader2 size={16} strokeWidth={1.5} className="animate-spin" />
+              ) : (
+                <Heart size={16} strokeWidth={1.5} fill={isInWishlist(product._id) ? 'currentColor' : 'none'} />
+              )}
             </button>
             <button
               className="p-2.5 bg-white/90 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-75 hover:bg-black hover:text-white"

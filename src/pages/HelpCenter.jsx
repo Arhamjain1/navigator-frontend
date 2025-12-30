@@ -48,7 +48,7 @@ const HelpCenter = () => {
     },
     {
       question: 'What is your return policy?',
-      answer: 'We offer a 30-day return policy for all unworn items with original tags attached. Items must be in their original condition.'
+      answer: 'We offer a 7-day return policy for all unworn items with original tags attached. Items must be in their original condition.'
     },
     {
       question: 'How long does shipping take?',
