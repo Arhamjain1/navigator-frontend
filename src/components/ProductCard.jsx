@@ -109,8 +109,8 @@ const ProductCard = ({ product, variant = 'default' }) => {
             )}
           </div>
 
-          {/* Action Buttons - Right Side */}
-          <div className="absolute top-4 right-4 flex flex-col gap-2">
+          {/* Action Buttons - Right Side (Desktop only) */}
+          <div className="absolute top-4 right-4 hidden md:flex flex-col gap-2">
             <button
               className={`p-2.5 backdrop-blur-sm opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 disabled:opacity-50 ${isInWishlist(product._id) ? 'bg-red-500 text-white' : 'bg-white/90 hover:bg-black hover:text-white'}`}
               aria-label="Add to wishlist"
@@ -154,10 +154,27 @@ const ProductCard = ({ product, variant = 'default' }) => {
             </p>
           )}
           
-          {/* Product Name */}
-          <h3 className="text-sm font-medium text-black leading-snug group-hover:opacity-70 transition-opacity duration-300 line-clamp-2">
-            {product.name}
-          </h3>
+          {/* Product Name with Mobile Wishlist Button */}
+          <div className="flex items-start gap-2">
+            <h3 className="text-sm font-medium text-black leading-snug group-hover:opacity-70 transition-opacity duration-300 line-clamp-2 flex-1">
+              {product.name}
+            </h3>
+            {/* Mobile Wishlist Button - Always visible on mobile */}
+            <button
+              className={`md:hidden p-1.5 flex-shrink-0 transition-colors ${
+                isInWishlist(product._id) ? 'text-red-500' : 'text-neutral-400 hover:text-black'
+              }`}
+              aria-label="Add to wishlist"
+              onClick={handleWishlist}
+              disabled={isProcessing(product._id)}
+            >
+              {isProcessing(product._id) ? (
+                <Loader2 size={18} strokeWidth={1.5} className="animate-spin" />
+              ) : (
+                <Heart size={18} strokeWidth={1.5} fill={isInWishlist(product._id) ? 'currentColor' : 'none'} />
+              )}
+            </button>
+          </div>
           
           {/* Price */}
           <div className="flex items-baseline gap-2">

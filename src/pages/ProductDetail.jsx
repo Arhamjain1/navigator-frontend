@@ -269,10 +269,33 @@ const ProductDetail = () => {
               {product.category}
             </p>
 
-            {/* Title */}
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl tracking-tight text-black mb-5">
-              {product.name}
-            </h1>
+            {/* Title with Wishlist Button */}
+            <div className="flex items-start gap-3 mb-5">
+              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl tracking-tight text-black flex-1">
+                {product.name}
+              </h1>
+              {/* Wishlist Button - H&M/Ralph Lauren Style */}
+              <button 
+                onClick={() => !isProcessing(product._id) && toggleWishlist(product._id)}
+                disabled={isProcessing(product._id)}
+                className={`p-2 flex-shrink-0 transition-all duration-300 disabled:opacity-50 ${
+                  isInWishlist(product._id)
+                    ? 'text-red-500'
+                    : 'text-neutral-400 hover:text-black'
+                }`}
+                aria-label="Add to wishlist"
+              >
+                {isProcessing(product._id) ? (
+                  <Loader2 size={24} strokeWidth={1.5} className="animate-spin" />
+                ) : (
+                  <Heart 
+                    size={24} 
+                    strokeWidth={1.5} 
+                    fill={isInWishlist(product._id) ? 'currentColor' : 'none'}
+                  />
+                )}
+              </button>
+            </div>
 
             {/* Price */}
             <div className="flex items-baseline gap-4 mb-8">
@@ -410,25 +433,6 @@ const ProductDetail = () => {
               >
                 <Zap size={16} />
                 Buy Now
-              </button>
-              <button 
-                onClick={() => !isProcessing(product._id) && toggleWishlist(product._id)}
-                disabled={isProcessing(product._id)}
-                className={`p-4 border transition-all duration-300 flex-shrink-0 disabled:opacity-50 ${
-                  isInWishlist(product._id)
-                    ? 'bg-red-50 border-red-200 text-red-500'
-                    : 'border-neutral-200 hover:border-black hover:bg-black hover:text-white'
-                }`}
-              >
-                {isProcessing(product._id) ? (
-                  <Loader2 size={20} strokeWidth={1.5} className="animate-spin" />
-                ) : (
-                  <Heart 
-                    size={20} 
-                    strokeWidth={1.5} 
-                    fill={isInWishlist(product._id) ? 'currentColor' : 'none'}
-                  />
-                )}
               </button>
             </div>
 
