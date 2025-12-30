@@ -340,26 +340,6 @@ const Home = () => {
           </div>
         </div>
       </section>
-
-      {/* Newsletter Section */}
-      <section className="py-20 md:py-32 bg-neutral-100">
-        <div className="container-custom text-center">
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl mb-4">Stay in the Loop</h2>
-          <p className="text-neutral-600 mb-8 max-w-md mx-auto">
-            Subscribe to get special offers, free giveaways, and new arrivals updates.
-          </p>
-          <form className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="input flex-1"
-            />
-            <button type="submit" className="btn-primary">
-              Subscribe
-            </button>
-          </form>
-        </div>
-      </section>
     </div>
   );
 };
