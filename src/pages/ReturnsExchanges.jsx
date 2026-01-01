@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ChevronRight, RefreshCw, Package, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { ChevronRight, RefreshCw, Package, CheckCircle, XCircle, Clock, Wallet, Gift } from 'lucide-react';
 
 const ReturnsExchanges = () => {
   return (
@@ -16,13 +16,28 @@ const ReturnsExchanges = () => {
           </nav>
           <h1 className="font-display text-4xl md:text-6xl tracking-tight mb-4">Returns & Exchanges</h1>
           <p className="text-neutral-400 text-lg max-w-xl">
-            Easy returns within 7 days. Your satisfaction is our priority.
+            Easy returns within 7 days. Get store credit for your next purchase.
           </p>
         </div>
       </div>
 
       <div className="container-custom py-16">
         <div className="max-w-4xl mx-auto">
+          {/* Important Notice */}
+          <section className="mb-12">
+            <div className="bg-amber-50 border border-amber-200 p-6 md:p-8">
+              <div className="flex items-start gap-4">
+                <Wallet className="text-amber-600 flex-shrink-0 mt-1" size={24} />
+                <div>
+                  <h3 className="font-display text-lg mb-2 text-amber-800">Store Credit Policy</h3>
+                  <p className="text-amber-700">
+                    We do not offer cash refunds. All eligible returns will receive <strong>store credit</strong> that can be used for any future purchase within <strong>3 months</strong> of issue.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Return Policy Overview */}
           <section className="mb-16">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -32,14 +47,14 @@ const ReturnsExchanges = () => {
                 <p className="text-neutral-500 text-sm">Return any item within 7 days of delivery</p>
               </div>
               <div className="text-center p-8 border border-neutral-200">
-                <RefreshCw size={40} className="mx-auto mb-4 text-neutral-700" />
-                <h3 className="font-display text-xl mb-2">Free Exchanges</h3>
-                <p className="text-neutral-500 text-sm">Exchange for a different size or color at no extra cost</p>
+                <Gift size={40} className="mx-auto mb-4 text-neutral-700" />
+                <h3 className="font-display text-xl mb-2">Store Credit</h3>
+                <p className="text-neutral-500 text-sm">Receive credit valid for 3 months</p>
               </div>
               <div className="text-center p-8 border border-neutral-200">
-                <Package size={40} className="mx-auto mb-4 text-neutral-700" />
-                <h3 className="font-display text-xl mb-2">Easy Process</h3>
-                <p className="text-neutral-500 text-sm">Simple online return request and doorstep pickup</p>
+                <RefreshCw size={40} className="mx-auto mb-4 text-neutral-700" />
+                <h3 className="font-display text-xl mb-2">Free Exchanges</h3>
+                <p className="text-neutral-500 text-sm">Exchange for different size or color</p>
               </div>
             </div>
           </section>
@@ -106,64 +121,92 @@ const ReturnsExchanges = () => {
               <div className="flex gap-6 items-start">
                 <div className="w-10 h-10 bg-black text-white flex items-center justify-center flex-shrink-0 font-display">1</div>
                 <div>
-                  <h3 className="font-medium text-lg mb-2">Log into Your Account</h3>
-                  <p className="text-neutral-600">Go to "My Orders" and select the order containing the item you wish to return.</p>
+                  <h3 className="font-medium text-lg mb-2">Contact Us</h3>
+                  <p className="text-neutral-600">Email us at <a href="mailto:info@navigatorclothing.in" className="text-black underline">info@navigatorclothing.in</a> with your order number and reason for return.</p>
                 </div>
               </div>
               <div className="flex gap-6 items-start">
                 <div className="w-10 h-10 bg-black text-white flex items-center justify-center flex-shrink-0 font-display">2</div>
                 <div>
-                  <h3 className="font-medium text-lg mb-2">Select Items to Return</h3>
-                  <p className="text-neutral-600">Choose the item(s) you want to return and select a reason for the return.</p>
+                  <h3 className="font-medium text-lg mb-2">Get Return Approval</h3>
+                  <p className="text-neutral-600">Our team will review your request and send you return instructions within 24-48 hours.</p>
                 </div>
               </div>
               <div className="flex gap-6 items-start">
                 <div className="w-10 h-10 bg-black text-white flex items-center justify-center flex-shrink-0 font-display">3</div>
                 <div>
-                  <h3 className="font-medium text-lg mb-2">Schedule Pickup</h3>
-                  <p className="text-neutral-600">Choose a convenient date and time for our courier partner to pick up the item.</p>
+                  <h3 className="font-medium text-lg mb-2">Ship the Item</h3>
+                  <p className="text-neutral-600">Pack the item securely with all original tags and packaging. Ship to the address provided.</p>
                 </div>
               </div>
               <div className="flex gap-6 items-start">
                 <div className="w-10 h-10 bg-black text-white flex items-center justify-center flex-shrink-0 font-display">4</div>
                 <div>
-                  <h3 className="font-medium text-lg mb-2">Receive Refund</h3>
-                  <p className="text-neutral-600">Once we receive and inspect the item, your refund will be processed within 5-7 business days.</p>
+                  <h3 className="font-medium text-lg mb-2">Receive Store Credit</h3>
+                  <p className="text-neutral-600">Once we receive and inspect the item, you'll receive store credit via email within 3-5 business days.</p>
                 </div>
               </div>
             </div>
           </section>
 
-          {/* Refund Information */}
+          {/* Store Credit Information */}
           <section className="mb-16">
-            <h2 className="font-display text-2xl mb-8">Refund Information</h2>
+            <h2 className="font-display text-2xl mb-8">Store Credit Information</h2>
             <div className="bg-neutral-50 p-6 md:p-8">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-neutral-300">
-                    <th className="text-left py-4 font-medium">Original Payment Method</th>
-                    <th className="text-left py-4 font-medium">Refund Method</th>
-                    <th className="text-left py-4 font-medium">Timeline</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-neutral-200">
-                    <td className="py-4">Credit/Debit Card</td>
-                    <td className="py-4">Original Card</td>
-                    <td className="py-4">5-7 Business Days</td>
-                  </tr>
-                  <tr className="border-b border-neutral-200">
-                    <td className="py-4">UPI</td>
-                    <td className="py-4">Original UPI ID</td>
-                    <td className="py-4">3-5 Business Days</td>
-                  </tr>
-                  <tr>
-                    <td className="py-4">Cash on Delivery</td>
-                    <td className="py-4">Bank Transfer / Store Credit</td>
-                    <td className="py-4">5-7 Business Days</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4 pb-4 border-b border-neutral-200">
+                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">₹</div>
+                  <div>
+                    <h3 className="font-medium mb-1">Credit Value</h3>
+                    <p className="text-neutral-600 text-sm">Store credit will be issued for the full value of the returned item(s), excluding original shipping charges.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 pb-4 border-b border-neutral-200">
+                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">⏱</div>
+                  <div>
+                    <h3 className="font-medium mb-1">Validity Period</h3>
+                    <p className="text-neutral-600 text-sm">Store credit is valid for <strong>3 months</strong> from the date of issue. Unused credit will expire after this period.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4 pb-4 border-b border-neutral-200">
+                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">✉</div>
+                  <div>
+                    <h3 className="font-medium mb-1">How to Use</h3>
+                    <p className="text-neutral-600 text-sm">You'll receive a unique credit code via email. Apply this code at checkout to redeem your credit.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">∞</div>
+                  <div>
+                    <h3 className="font-medium mb-1">Stackable</h3>
+                    <p className="text-neutral-600 text-sm">Store credits can be combined with other promotions and discount codes.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Exchange Information */}
+          <section className="mb-16">
+            <h2 className="font-display text-2xl mb-8">Exchange Policy</h2>
+            <div className="bg-blue-50 border border-blue-100 p-6 md:p-8">
+              <p className="text-blue-900 mb-4">
+                Need a different size or color? We're happy to help with exchanges!
+              </p>
+              <ul className="space-y-2 text-blue-800">
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-1">•</span>
+                  <span>Exchanges are subject to availability of the desired item</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-1">•</span>
+                  <span>No additional shipping charges for exchanges within India</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-blue-600 mt-1">•</span>
+                  <span>Price difference (if any) will be adjusted via store credit or additional payment</span>
+                </li>
+              </ul>
             </div>
           </section>
 
@@ -171,9 +214,9 @@ const ReturnsExchanges = () => {
           <section className="bg-black text-white p-8 md:p-12 text-center">
             <h2 className="font-display text-2xl mb-4">Need Help with Your Return?</h2>
             <p className="text-neutral-400 mb-6">Our support team is ready to assist you.</p>
-            <Link to="/help-center" className="inline-block bg-white text-black px-8 py-3 font-medium hover:bg-neutral-200 transition-colors">
-              Contact Support
-            </Link>
+            <a href="mailto:info@navigatorclothing.in" className="inline-block bg-white text-black px-8 py-3 font-medium hover:bg-neutral-200 transition-colors">
+              info@navigatorclothing.in
+            </a>
           </section>
         </div>
       </div>

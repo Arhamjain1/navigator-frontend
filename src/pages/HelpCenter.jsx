@@ -48,7 +48,7 @@ const HelpCenter = () => {
     },
     {
       question: 'What is your return policy?',
-      answer: 'We offer a 7-day return policy for all unworn items with original tags attached. Items must be in their original condition.'
+      answer: 'We offer a 7-day return policy for all unworn items with original tags attached. Items must be in their original condition. We do not offer cash refunds - instead, you will receive store credit valid for 3 months.'
     },
     {
       question: 'How long does shipping take?',
@@ -124,9 +124,9 @@ const HelpCenter = () => {
               Our customer support team is here to assist you with any questions or concerns.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <a href="mailto:support@navigator.com" className="flex items-center justify-center gap-3 px-6 py-4 bg-black text-white hover:bg-neutral-800 transition-colors">
+              <a href="mailto:info@navigatorclothing.in" className="flex items-center justify-center gap-3 px-6 py-4 bg-black text-white hover:bg-neutral-800 transition-colors">
                 <Mail size={20} />
-                <span className="font-medium">support@navigator.com</span>
+                <span className="font-medium">info@navigatorclothing.in</span>
               </a>
               <a href="tel:+919876543210" className="flex items-center justify-center gap-3 px-6 py-4 border border-black hover:bg-black hover:text-white transition-colors">
                 <Phone size={20} />
