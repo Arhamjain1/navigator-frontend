@@ -24,6 +24,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('details');
   const [showCartDrawer, setShowCartDrawer] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -31,7 +33,7 @@ const ProductDetail = () => {
       try {
         const response = await productsAPI.getById(id);
         setProduct(response.data);
-        
+
         // Set default selections - select first available size
         if (response.data.sizes?.length > 0) {
           // Find first available size
@@ -81,6 +83,61 @@ const ProductDetail = () => {
   const handleNextImage = () => {
     if (product.images?.length > 1) {
       setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+    }
+  };
+
+  // Touch swipe handlers
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe && product.images?.length > 1) {
+      handleNextImage();
+    } else if (isRightSwipe && product.images?.length > 1) {
+      handlePrevImage();
+    }
+  };
+
+  // Share functionality
+  const handleShare = async () => {
+    const shareData = {
+      title: product.name,
+      text: `Check out ${product.name} - ${formatPrice(product.price)}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share) {
+        // Mobile native share
+        await navigator.share(shareData);
+        toast.success('Shared successfully!');
+      } else {
+        // Desktop fallback - copy to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Link copied to clipboard!');
+      }
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        // Fallback to clipboard
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          toast.success('Link copied to clipboard!');
+        } catch {
+          toast.error('Failed to share');
+        }
+      }
     }
   };
 
@@ -183,13 +240,19 @@ const ProductDetail = () => {
           {/* Images */}
           <div className="space-y-4">
             {/* Main Image */}
-            <div className="relative aspect-[3/4] bg-neutral-100 overflow-hidden group">
+            <div
+              className="relative aspect-[3/4] bg-neutral-100 overflow-hidden group touch-pan-y"
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+            >
               <img
                 src={product.images?.[selectedImage] || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'}
                 alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105 select-none pointer-events-none"
+                draggable="false"
               />
-              
+
               {/* Image Navigation Arrows */}
               {product.images?.length > 1 && (
                 <>
@@ -219,7 +282,7 @@ const ProductDetail = () => {
                   </div>
                 </>
               )}
-              
+
               {/* Badges */}
               <div className="absolute top-5 left-5 flex flex-col gap-2">
                 {product.isNew && (
@@ -235,7 +298,11 @@ const ProductDetail = () => {
               </div>
 
               {/* Share button */}
-              <button className="absolute top-5 right-5 p-3 bg-white/90 backdrop-blur-sm hover:bg-black hover:text-white transition-all duration-300">
+              <button
+                onClick={handleShare}
+                className="absolute top-5 right-5 p-3 bg-white/90 backdrop-blur-sm hover:bg-black hover:text-white transition-all duration-300"
+                aria-label="Share product"
+              >
                 <Share2 size={16} strokeWidth={1.5} />
               </button>
             </div>
@@ -247,9 +314,8 @@ const ProductDetail = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-20 h-24 bg-neutral-100 overflow-hidden transition-all duration-300 ${
-                      selectedImage === index ? 'ring-2 ring-black ring-offset-2' : 'opacity-60 hover:opacity-100'
-                    }`}
+                    className={`flex-shrink-0 w-20 h-24 bg-neutral-100 overflow-hidden transition-all duration-300 ${selectedImage === index ? 'ring-2 ring-black ring-offset-2' : 'opacity-60 hover:opacity-100'
+                      }`}
                   >
                     <img
                       src={image}
@@ -275,22 +341,21 @@ const ProductDetail = () => {
                 {product.name}
               </h1>
               {/* Wishlist Button - H&M/Ralph Lauren Style */}
-              <button 
+              <button
                 onClick={() => !isProcessing(product._id) && toggleWishlist(product._id)}
                 disabled={isProcessing(product._id)}
-                className={`p-2 flex-shrink-0 transition-all duration-300 disabled:opacity-50 ${
-                  isInWishlist(product._id)
+                className={`p-2 flex-shrink-0 transition-all duration-300 disabled:opacity-50 ${isInWishlist(product._id)
                     ? 'text-red-500'
                     : 'text-neutral-400 hover:text-black'
-                }`}
+                  }`}
                 aria-label="Add to wishlist"
               >
                 {isProcessing(product._id) ? (
                   <Loader2 size={24} strokeWidth={1.5} className="animate-spin" />
                 ) : (
-                  <Heart 
-                    size={24} 
-                    strokeWidth={1.5} 
+                  <Heart
+                    size={24}
+                    strokeWidth={1.5}
                     fill={isInWishlist(product._id) ? 'currentColor' : 'none'}
                   />
                 )}
@@ -328,11 +393,10 @@ const ProductDetail = () => {
                     <button
                       key={color.name}
                       onClick={() => setSelectedColor(color)}
-                      className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${
-                        selectedColor?.name === color.name
+                      className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${selectedColor?.name === color.name
                           ? 'ring-2 ring-black ring-offset-2 scale-110'
                           : 'ring-1 ring-neutral-200 hover:ring-neutral-400'
-                      }`}
+                        }`}
                       style={{ backgroundColor: color.hex }}
                       title={color.name}
                     >
@@ -367,13 +431,12 @@ const ProductDetail = () => {
                         key={size}
                         onClick={() => available && setSelectedSize(size)}
                         disabled={!available}
-                        className={`min-w-[56px] h-12 px-5 text-sm font-medium transition-all duration-300 relative ${
-                          !available
+                        className={`min-w-[56px] h-12 px-5 text-sm font-medium transition-all duration-300 relative ${!available
                             ? 'border border-neutral-100 text-neutral-300 cursor-not-allowed line-through'
                             : selectedSize === size
-                            ? 'bg-black text-white'
-                            : 'border border-neutral-200 hover:border-black text-black'
-                        }`}
+                              ? 'bg-black text-white'
+                              : 'border border-neutral-200 hover:border-black text-black'
+                          }`}
                         title={available ? `${stockCount} in stock` : 'Out of stock'}
                       >
                         {size}
@@ -439,20 +502,19 @@ const ProductDetail = () => {
             {/* Stock Status */}
             <div className="flex items-center gap-2 text-sm mb-8 pb-8 border-b border-neutral-100">
               <span
-                className={`w-2 h-2 rounded-full ${
-                  product.stock > 10
+                className={`w-2 h-2 rounded-full ${product.stock > 10
                     ? 'bg-emerald-500'
                     : product.stock > 0
-                    ? 'bg-amber-500'
-                    : 'bg-red-500'
-                }`}
+                      ? 'bg-amber-500'
+                      : 'bg-red-500'
+                  }`}
               />
               <span className="text-neutral-600">
                 {product.stock > 10
                   ? 'In Stock — Ready to ship'
                   : product.stock > 0
-                  ? `Low Stock — Only ${product.stock} left`
-                  : 'Out of Stock'}
+                    ? `Low Stock — Only ${product.stock} left`
+                    : 'Out of Stock'}
               </span>
             </div>
 
@@ -486,38 +548,35 @@ const ProductDetail = () => {
         {/* Product Details Tabs */}
         <div className="mt-16 pt-16 border-t border-neutral-100">
           <div className="flex gap-8 border-b border-neutral-200 mb-8">
-            <button 
+            <button
               onClick={() => setActiveTab('details')}
-              className={`pb-4 text-sm font-medium tracking-wide transition-colors ${
-                activeTab === 'details' 
-                  ? 'text-black border-b-2 border-black' 
+              className={`pb-4 text-sm font-medium tracking-wide transition-colors ${activeTab === 'details'
+                  ? 'text-black border-b-2 border-black'
                   : 'text-neutral-400 hover:text-black'
-              }`}
+                }`}
             >
               DETAILS
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('care')}
-              className={`pb-4 text-sm font-medium tracking-wide transition-colors ${
-                activeTab === 'care' 
-                  ? 'text-black border-b-2 border-black' 
+              className={`pb-4 text-sm font-medium tracking-wide transition-colors ${activeTab === 'care'
+                  ? 'text-black border-b-2 border-black'
                   : 'text-neutral-400 hover:text-black'
-              }`}
+                }`}
             >
               CARE
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('shipping')}
-              className={`pb-4 text-sm font-medium tracking-wide transition-colors ${
-                activeTab === 'shipping' 
-                  ? 'text-black border-b-2 border-black' 
+              className={`pb-4 text-sm font-medium tracking-wide transition-colors ${activeTab === 'shipping'
+                  ? 'text-black border-b-2 border-black'
                   : 'text-neutral-400 hover:text-black'
-              }`}
+                }`}
             >
               SHIPPING
             </button>
           </div>
-          
+
           <div className="max-w-3xl">
             {activeTab === 'details' && (
               <div className="text-neutral-600 text-sm leading-relaxed space-y-4">
@@ -578,9 +637,9 @@ const ProductDetail = () => {
       </div>
 
       {/* Cart Drawer */}
-      <CartDrawer 
-        isOpen={showCartDrawer} 
-        onClose={handleCloseDrawer} 
+      <CartDrawer
+        isOpen={showCartDrawer}
+        onClose={handleCloseDrawer}
         addedItem={lastAddedItem}
       />
     </div>
