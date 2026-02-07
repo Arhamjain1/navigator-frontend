@@ -16,12 +16,9 @@ const Navbar = () => {
   const location = useLocation();
 
   const categories = [
-    { name: 'T-Shirts', slug: 't-shirts' },
-    { name: 'Shirts', slug: 'shirts' },
-    { name: 'Sweatshirts', slug: 'sweatshirts' },
-    { name: 'Jeans', slug: 'jeans' },
-    { name: 'Trousers', slug: 'trousers' },
-    { name: 'Jackets', slug: 'jackets' },
+    { name: 'Polo Shirts', slug: 'polo-shirts' },
+    { name: 'Knit Polo Shirts', slug: 'knit-polo-shirts' },
+    { name: 'Zip Polo Shirts', slug: 'zip-polo-shirts' },
   ];
 
   // Check if we're on homepage
@@ -36,12 +33,12 @@ const Navbar = () => {
   }, []);
 
   // Dynamic navbar styling based on scroll and page
-  const navBg = isScrolled || !isHomepage 
-    ? 'bg-white shadow-sm' 
+  const navBg = isScrolled || !isHomepage
+    ? 'bg-white shadow-sm'
     : 'bg-transparent';
-  
-  const textColor = isScrolled || !isHomepage 
-    ? 'text-black' 
+
+  const textColor = isScrolled || !isHomepage
+    ? 'text-black'
     : 'text-white';
 
   const logoColor = isScrolled || !isHomepage
@@ -62,9 +59,9 @@ const Navbar = () => {
             >
               New Arrivals
             </Link>
-            
+
             {/* Shop Dropdown */}
-            <div 
+            <div
               className="relative"
               onMouseEnter={() => setShowCategories(true)}
               onMouseLeave={() => setShowCategories(false)}
@@ -76,21 +73,21 @@ const Navbar = () => {
                 Shop
                 <ChevronDown className="w-3.5 h-3.5" />
               </Link>
-              
+
               {showCategories && (
                 <div className="absolute top-full left-0 pt-4 w-56">
                   <div className="bg-white shadow-xl py-4">
-                    <Link 
-                      to="/shop" 
+                    <Link
+                      to="/shop"
                       className="block px-6 py-2.5 text-sm text-neutral-900 hover:bg-neutral-50 transition-colors font-medium"
                     >
                       View All
                     </Link>
                     <div className="my-2 border-t border-neutral-100" />
                     {categories.map((cat) => (
-                      <Link 
+                      <Link
                         key={cat.slug}
-                        to={`/shop?category=${cat.slug}`} 
+                        to={`/shop?category=${cat.slug}`}
                         className="block px-6 py-2.5 text-sm text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 transition-colors"
                       >
                         {cat.name}
@@ -229,7 +226,7 @@ const Navbar = () => {
                 >
                   Shop All
                 </Link>
-                
+
                 <div className="py-4">
                   <p className="text-xs uppercase tracking-widest text-neutral-400 mb-3">Categories</p>
                   {categories.map((cat) => (
@@ -251,7 +248,7 @@ const Navbar = () => {
                 >
                   Bestsellers
                 </Link>
-                
+
                 <div className="pt-8 mt-4 border-t border-neutral-200">
                   {user ? (
                     <>

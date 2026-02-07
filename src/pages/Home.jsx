@@ -27,26 +27,26 @@ const Home = () => {
       name: 'New Arrivals',
       slug: 'new-arrivals',
       tag: 'new-arrivals',
-      image: 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=800&q=80',
+      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80',
       description: 'Just Dropped'
     },
     {
-      name: 'Jackets & Coats',
-      slug: 'jackets',
-      image: 'https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=800&q=80',
-      description: 'Stay Warm'
+      name: 'Polo Shirts',
+      slug: 'polo-shirts',
+      image: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=800&q=80',
+      description: 'Classic Style'
     },
     {
-      name: 'T-Shirts',
-      slug: 't-shirts',
-      image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&q=80',
-      description: 'Essentials'
+      name: 'Knit Polos',
+      slug: 'knit-polo-shirts',
+      image: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=800&q=80',
+      description: 'Premium Knits'
     },
     {
-      name: 'Jeans',
-      slug: 'jeans',
-      image: 'https://images.unsplash.com/photo-1582552938357-32b906df40cb?w=800&q=80',
-      description: 'Denim Edit'
+      name: 'Zip Polos',
+      slug: 'zip-polo-shirts',
+      image: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&q=80',
+      description: 'Modern Edge'
     },
   ];
 
@@ -117,7 +117,7 @@ const Home = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
         </div>
-        
+
         <div className="relative h-full flex items-center pt-24 md:pt-0">
           <div className="container-custom">
             <div className="max-w-2xl">

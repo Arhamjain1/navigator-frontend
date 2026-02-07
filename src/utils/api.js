@@ -73,4 +73,15 @@ export const wishlistAPI = {
   check: (productId) => api.get(`/wishlist/check/${productId}`),
 };
 
+// Upload API
+export const uploadAPI = {
+  uploadImage: (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    return api.post('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+};
+
 export default api;

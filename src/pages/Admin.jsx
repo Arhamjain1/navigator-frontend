@@ -9,9 +9,11 @@ import {
   Trash2,
   X,
   ChevronDown,
+  Upload,
+  Loader2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { productsAPI, ordersAPI } from '../utils/api';
+import { productsAPI, ordersAPI, uploadAPI } from '../utils/api';
 import { formatPrice, formatDate, getStatusColor } from '../utils/helpers';
 import Loading from '../components/Loading';
 import toast from 'react-hot-toast';
@@ -26,6 +28,7 @@ const Admin = () => {
   const [orders, setOrders] = useState([]);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [productForm, setProductForm] = useState({
     name: '',
     description: '',
@@ -45,7 +48,7 @@ const Admin = () => {
   useEffect(() => {
     // Wait for auth to finish loading before redirecting
     if (authLoading) return;
-    
+
     if (!user || !isAdmin) {
       navigate('/login');
       return;
@@ -96,7 +99,7 @@ const Admin = () => {
   const handleEditProduct = (product) => {
     setEditingProduct(product);
     // Convert stockBySize Map to plain object if needed
-    const stockBySizeObj = product.stockBySize 
+    const stockBySizeObj = product.stockBySize
       ? (typeof product.stockBySize === 'object' ? { ...product.stockBySize } : {})
       : {};
     setProductForm({
@@ -201,7 +204,7 @@ const Admin = () => {
   };
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34', '36', '38', '40'];
-  const categories = ['t-shirts', 'shirts', 'sweatshirts', 'jeans', 'trousers', 'jackets'];
+  const categories = ['polo-shirts', 'knit-polo-shirts', 'zip-polo-shirts', 't-shirts', 'shirts'];
   const statusOptions = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
 
   // Show loading while auth is being checked
@@ -223,33 +226,30 @@ const Admin = () => {
             <nav className="bg-white p-4 space-y-2 rounded-2xl">
               <button
                 onClick={() => setActiveTab('dashboard')}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl transition-colors ${
-                  activeTab === 'dashboard'
-                    ? 'bg-black text-white'
-                    : 'hover:bg-gray-100 text-gray-700'
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl transition-colors ${activeTab === 'dashboard'
+                  ? 'bg-black text-white'
+                  : 'hover:bg-gray-100 text-gray-700'
+                  }`}
               >
                 <LayoutDashboard size={20} />
                 Dashboard
               </button>
               <button
                 onClick={() => setActiveTab('products')}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl transition-colors ${
-                  activeTab === 'products'
-                    ? 'bg-black text-white'
-                    : 'hover:bg-gray-100 text-gray-700'
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl transition-colors ${activeTab === 'products'
+                  ? 'bg-black text-white'
+                  : 'hover:bg-gray-100 text-gray-700'
+                  }`}
               >
                 <Package size={20} />
                 Products
               </button>
               <button
                 onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl transition-colors ${
-                  activeTab === 'orders'
-                    ? 'bg-black text-white'
-                    : 'hover:bg-gray-100 text-gray-700'
-                }`}
+                className={`w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl transition-colors ${activeTab === 'orders'
+                  ? 'bg-black text-white'
+                  : 'hover:bg-gray-100 text-gray-700'
+                  }`}
               >
                 <ShoppingCart size={20} />
                 Orders
@@ -364,13 +364,12 @@ const Admin = () => {
                                 {product.stockBySize && Object.keys(product.stockBySize).length > 0 ? (
                                   <div className="flex flex-wrap gap-1">
                                     {Object.entries(product.stockBySize).map(([size, qty]) => (
-                                      <span 
-                                        key={size} 
-                                        className={`inline-block px-2 py-0.5 text-xs rounded ${
-                                          qty <= 5 ? 'bg-red-100 text-red-700' : 
-                                          qty <= 10 ? 'bg-yellow-100 text-yellow-700' : 
-                                          'bg-green-100 text-green-700'
-                                        }`}
+                                      <span
+                                        key={size}
+                                        className={`inline-block px-2 py-0.5 text-xs rounded ${qty <= 5 ? 'bg-red-100 text-red-700' :
+                                          qty <= 10 ? 'bg-yellow-100 text-yellow-700' :
+                                            'bg-green-100 text-green-700'
+                                          }`}
                                       >
                                         {size}: {qty}
                                       </span>
@@ -553,7 +552,64 @@ const Admin = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-900">Image URLs</label>
+                <label className="block text-sm font-medium mb-2 text-gray-900">Product Images</label>
+
+                {/* Upload Button */}
+                <div className="mb-3">
+                  <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg cursor-pointer transition-colors">
+                    {uploading ? (
+                      <><Loader2 size={16} className="animate-spin" /> Uploading...</>
+                    ) : (
+                      <><Upload size={16} /> Upload Image</>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploading}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        setUploading(true);
+                        try {
+                          const response = await uploadAPI.uploadImage(file);
+                          const newImages = [...productForm.images.filter(img => img.trim()), response.data.url];
+                          setProductForm({ ...productForm, images: newImages });
+                          toast.success('Image uploaded!');
+                        } catch (error) {
+                          console.error('Upload failed:', error);
+                          toast.error('Failed to upload image');
+                        } finally {
+                          setUploading(false);
+                          e.target.value = '';
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {/* Image Previews */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {productForm.images.filter(img => img.trim()).map((img, index) => (
+                    <div key={index} className="relative group">
+                      <img src={img} alt={`Product ${index + 1}`} className="w-20 h-24 object-cover rounded-lg border" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newImages = productForm.images.filter((_, i) => i !== index);
+                          setProductForm({ ...productForm, images: newImages.length ? newImages : [''] });
+                        }}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Manual URL Input */}
+                <p className="text-xs text-gray-500 mb-2">Or add image URL manually:</p>
                 {productForm.images.map((img, index) => (
                   <div key={index} className="flex gap-2 mb-2">
                     <input
@@ -588,7 +644,7 @@ const Admin = () => {
                   }
                   className="text-sm text-black hover:text-gray-600"
                 >
-                  + Add another image
+                  + Add another URL
                 </button>
               </div>
 
@@ -610,11 +666,10 @@ const Admin = () => {
                         }
                         setProductForm({ ...productForm, sizes: newSizes, stockBySize: newStockBySize });
                       }}
-                      className={`px-3 py-1 border rounded-lg transition-colors ${
-                        productForm.sizes.includes(size)
-                          ? 'bg-black text-white border-black'
-                          : 'border-gray-200 hover:border-black'
-                      }`}
+                      className={`px-3 py-1 border rounded-lg transition-colors ${productForm.sizes.includes(size)
+                        ? 'bg-black text-white border-black'
+                        : 'border-gray-200 hover:border-black'
+                        }`}
                     >
                       {size}
                     </button>

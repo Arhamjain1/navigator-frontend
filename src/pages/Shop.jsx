@@ -16,12 +16,9 @@ const Shop = () => {
 
   const categories = [
     { value: 'all', label: 'All Products' },
-    { value: 't-shirts', label: 'T-Shirts' },
-    { value: 'shirts', label: 'Shirts' },
-    { value: 'sweatshirts', label: 'Sweatshirts' },
-    { value: 'jeans', label: 'Jeans' },
-    { value: 'trousers', label: 'Trousers' },
-    { value: 'jackets', label: 'Jackets' },
+    { value: 'polo-shirts', label: 'Polo Shirts' },
+    { value: 'knit-polo-shirts', label: 'Knit Polo Shirts' },
+    { value: 'zip-polo-shirts', label: 'Zip Polo Shirts' },
   ];
 
   const sortOptions = [
@@ -107,7 +104,7 @@ const Shop = () => {
     const category = searchParams.get('category');
     const tag = searchParams.get('tag');
     const search = searchParams.get('search');
-    
+
     if (search) return `Search Results`;
     if (tag === 'new-arrivals') return 'New Arrivals';
     if (tag === 'bestseller') return 'Bestsellers';
@@ -128,12 +125,12 @@ const Shop = () => {
   const getHeroImage = () => {
     const category = searchParams.get('category');
     const tag = searchParams.get('tag');
-    
+
     if (tag === 'new-arrivals') return 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80';
     if (tag === 'bestseller') return 'https://images.unsplash.com/photo-1507680434567-5739c80be1ac?w=1920&q=80';
-    if (category === 'jackets') return 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=1920&q=80';
-    if (category === 't-shirts') return 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=1920&q=80';
-    if (category === 'jeans') return 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=1920&q=80';
+    if (category === 'polo-shirts') return 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1920&q=80';
+    if (category === 'knit-polo-shirts') return 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=1920&q=80';
+    if (category === 'zip-polo-shirts') return 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=1920&q=80';
     return 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1920&q=80';
   };
 
@@ -141,7 +138,7 @@ const Shop = () => {
     <div className="pt-20 bg-white min-h-screen">
       {/* Hero Banner */}
       <div className="relative w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden">
-        <img 
+        <img
           src={getHeroImage()}
           alt={getPageTitle()}
           className="absolute inset-0 w-full h-full object-cover object-center"
@@ -202,22 +199,22 @@ const Shop = () => {
             <span className="text-neutral-500 text-sm">
               {pagination.total} products
             </span>
-            
+
             {/* Grid Toggle */}
             <div className="hidden md:flex items-center gap-1 border border-neutral-200 p-1 bg-white">
-              <button 
+              <button
                 onClick={() => setGridCols(2)}
                 className={`p-2 transition-colors ${gridCols === 2 ? 'bg-black text-white' : 'text-neutral-400 hover:text-black'}`}
               >
                 <LayoutGrid size={14} />
               </button>
-              <button 
+              <button
                 onClick={() => setGridCols(3)}
                 className={`p-2 transition-colors ${gridCols === 3 ? 'bg-black text-white' : 'text-neutral-400 hover:text-black'}`}
               >
                 <Grid3X3 size={14} />
               </button>
-              <button 
+              <button
                 onClick={() => setGridCols(4)}
                 className={`p-2 transition-colors ${gridCols === 4 ? 'bg-black text-white' : 'text-neutral-400 hover:text-black'}`}
               >
@@ -234,7 +231,7 @@ const Shop = () => {
                 </svg>
               </button>
             </div>
-            
+
             <div className="relative">
               <select
                 value={searchParams.get('sort') || 'newest'}
@@ -258,9 +255,8 @@ const Shop = () => {
         <div className="flex flex-col lg:flex-row gap-10">
           {/* Filters Sidebar */}
           <aside
-            className={`lg:w-56 flex-shrink-0 ${
-              filtersOpen ? 'block' : 'hidden lg:block'
-            }`}
+            className={`lg:w-56 flex-shrink-0 ${filtersOpen ? 'block' : 'hidden lg:block'
+              }`}
           >
             <div className="space-y-8 sticky top-28">
               {/* Categories */}
@@ -271,11 +267,10 @@ const Shop = () => {
                     <button
                       key={cat.value}
                       onClick={() => updateFilter('category', cat.value)}
-                      className={`block w-full text-left py-2 transition-colors text-sm ${
-                        (searchParams.get('category') || 'all') === cat.value
-                          ? 'text-black font-medium'
-                          : 'text-neutral-500 hover:text-black'
-                      }`}
+                      className={`block w-full text-left py-2 transition-colors text-sm ${(searchParams.get('category') || 'all') === cat.value
+                        ? 'text-black font-medium'
+                        : 'text-neutral-500 hover:text-black'
+                        }`}
                     >
                       {cat.label}
                     </button>
@@ -295,11 +290,10 @@ const Shop = () => {
                       newParams.delete('page');
                       setSearchParams(newParams);
                     }}
-                    className={`block w-full text-left py-2 transition-colors text-sm ${
-                      !searchParams.get('minPrice')
-                        ? 'text-black font-medium'
-                        : 'text-neutral-500 hover:text-black'
-                    }`}
+                    className={`block w-full text-left py-2 transition-colors text-sm ${!searchParams.get('minPrice')
+                      ? 'text-black font-medium'
+                      : 'text-neutral-500 hover:text-black'
+                      }`}
                   >
                     All Prices
                   </button>
@@ -313,11 +307,10 @@ const Shop = () => {
                         newParams.delete('page');
                         setSearchParams(newParams);
                       }}
-                      className={`block w-full text-left py-2 transition-colors text-sm ${
-                        searchParams.get('minPrice') === range.min.toString()
-                          ? 'text-black font-medium'
-                          : 'text-neutral-500 hover:text-black'
-                      }`}
+                      className={`block w-full text-left py-2 transition-colors text-sm ${searchParams.get('minPrice') === range.min.toString()
+                        ? 'text-black font-medium'
+                        : 'text-neutral-500 hover:text-black'
+                        }`}
                     >
                       {range.label}
                     </button>
@@ -331,31 +324,28 @@ const Shop = () => {
                 <div className="space-y-1">
                   <button
                     onClick={() => updateFilter('tag', 'new-arrivals')}
-                    className={`block w-full text-left py-2 transition-colors text-sm ${
-                      searchParams.get('tag') === 'new-arrivals'
-                        ? 'text-black font-medium'
-                        : 'text-neutral-500 hover:text-black'
-                    }`}
+                    className={`block w-full text-left py-2 transition-colors text-sm ${searchParams.get('tag') === 'new-arrivals'
+                      ? 'text-black font-medium'
+                      : 'text-neutral-500 hover:text-black'
+                      }`}
                   >
                     New Arrivals
                   </button>
                   <button
                     onClick={() => updateFilter('tag', 'bestseller')}
-                    className={`block w-full text-left py-2 transition-colors text-sm ${
-                      searchParams.get('tag') === 'bestseller'
-                        ? 'text-black font-medium'
-                        : 'text-neutral-500 hover:text-black'
-                    }`}
+                    className={`block w-full text-left py-2 transition-colors text-sm ${searchParams.get('tag') === 'bestseller'
+                      ? 'text-black font-medium'
+                      : 'text-neutral-500 hover:text-black'
+                      }`}
                   >
                     Bestsellers
                   </button>
                   <button
                     onClick={() => updateFilter('featured', 'true')}
-                    className={`block w-full text-left py-2 transition-colors text-sm ${
-                      searchParams.get('featured') === 'true'
-                        ? 'text-black font-medium'
-                        : 'text-neutral-500 hover:text-black'
-                    }`}
+                    className={`block w-full text-left py-2 transition-colors text-sm ${searchParams.get('featured') === 'true'
+                      ? 'text-black font-medium'
+                      : 'text-neutral-500 hover:text-black'
+                      }`}
                   >
                     Featured
                   </button>
@@ -364,7 +354,7 @@ const Shop = () => {
 
               {/* Promo Banner */}
               <div className="relative overflow-hidden mt-8">
-                <img 
+                <img
                   src="https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&q=80"
                   alt="New Collection"
                   className="w-full aspect-[3/4] object-cover"
@@ -395,9 +385,8 @@ const Shop = () => {
               </div>
             ) : (
               <>
-                <div className={`grid grid-cols-2 ${
-                  gridCols === 4 ? 'lg:grid-cols-4' : gridCols === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'
-                } gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-14`}>
+                <div className={`grid grid-cols-2 ${gridCols === 4 ? 'lg:grid-cols-4' : gridCols === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'
+                  } gap-x-4 gap-y-10 md:gap-x-6 md:gap-y-14`}>
                   {products.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
@@ -413,21 +402,20 @@ const Shop = () => {
                     >
                       Previous
                     </button>
-                    
+
                     {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((page) => (
                       <button
                         key={page}
                         onClick={() => updateFilter('page', page.toString())}
-                        className={`w-10 h-10 flex items-center justify-center text-sm transition-colors ${
-                          pagination.page === page
-                            ? 'bg-black text-white'
-                            : 'border border-neutral-200 hover:border-black text-neutral-600'
-                        }`}
+                        className={`w-10 h-10 flex items-center justify-center text-sm transition-colors ${pagination.page === page
+                          ? 'bg-black text-white'
+                          : 'border border-neutral-200 hover:border-black text-neutral-600'
+                          }`}
                       >
                         {page}
                       </button>
                     ))}
-                    
+
                     <button
                       onClick={() => updateFilter('page', Math.min(pagination.pages, pagination.page + 1).toString())}
                       disabled={pagination.page === pagination.pages}
