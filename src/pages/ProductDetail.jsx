@@ -309,12 +309,14 @@ const ProductDetail = () => {
 
             {/* Thumbnail Gallery */}
             {product.images?.length > 1 && (
-              <div className="flex gap-3 overflow-x-auto pb-2">
+              <div className="flex gap-3 overflow-x-auto pb-2 pt-1 px-1">
                 {product.images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-20 h-24 bg-neutral-100 overflow-hidden transition-all duration-300 ${selectedImage === index ? 'ring-2 ring-black ring-offset-2' : 'opacity-60 hover:opacity-100'
+                    className={`flex-shrink-0 w-20 h-24 bg-neutral-100 overflow-hidden transition-all duration-300 ${selectedImage === index
+                        ? 'border-2 border-black scale-105 shadow-md'
+                        : 'border border-transparent opacity-60 hover:opacity-100 hover:border-neutral-300'
                       }`}
                   >
                     <img
@@ -345,8 +347,8 @@ const ProductDetail = () => {
                 onClick={() => !isProcessing(product._id) && toggleWishlist(product._id)}
                 disabled={isProcessing(product._id)}
                 className={`p-2 flex-shrink-0 transition-all duration-300 disabled:opacity-50 ${isInWishlist(product._id)
-                    ? 'text-red-500'
-                    : 'text-neutral-400 hover:text-black'
+                  ? 'text-red-500'
+                  : 'text-neutral-400 hover:text-black'
                   }`}
                 aria-label="Add to wishlist"
               >
@@ -394,8 +396,8 @@ const ProductDetail = () => {
                       key={color.name}
                       onClick={() => setSelectedColor(color)}
                       className={`w-10 h-10 flex items-center justify-center transition-all duration-300 ${selectedColor?.name === color.name
-                          ? 'ring-2 ring-black ring-offset-2 scale-110'
-                          : 'ring-1 ring-neutral-200 hover:ring-neutral-400'
+                        ? 'ring-2 ring-black ring-offset-2 scale-110'
+                        : 'ring-1 ring-neutral-200 hover:ring-neutral-400'
                         }`}
                       style={{ backgroundColor: color.hex }}
                       title={color.name}
@@ -432,10 +434,10 @@ const ProductDetail = () => {
                         onClick={() => available && setSelectedSize(size)}
                         disabled={!available}
                         className={`min-w-[56px] h-12 px-5 text-sm font-medium transition-all duration-300 relative ${!available
-                            ? 'border border-neutral-100 text-neutral-300 cursor-not-allowed line-through'
-                            : selectedSize === size
-                              ? 'bg-black text-white'
-                              : 'border border-neutral-200 hover:border-black text-black'
+                          ? 'border border-neutral-100 text-neutral-300 cursor-not-allowed line-through'
+                          : selectedSize === size
+                            ? 'bg-black text-white'
+                            : 'border border-neutral-200 hover:border-black text-black'
                           }`}
                         title={available ? `${stockCount} in stock` : 'Out of stock'}
                       >
@@ -503,10 +505,10 @@ const ProductDetail = () => {
             <div className="flex items-center gap-2 text-sm mb-8 pb-8 border-b border-neutral-100">
               <span
                 className={`w-2 h-2 rounded-full ${product.stock > 10
-                    ? 'bg-emerald-500'
-                    : product.stock > 0
-                      ? 'bg-amber-500'
-                      : 'bg-red-500'
+                  ? 'bg-emerald-500'
+                  : product.stock > 0
+                    ? 'bg-amber-500'
+                    : 'bg-red-500'
                   }`}
               />
               <span className="text-neutral-600">
@@ -551,8 +553,8 @@ const ProductDetail = () => {
             <button
               onClick={() => setActiveTab('details')}
               className={`pb-4 text-sm font-medium tracking-wide transition-colors ${activeTab === 'details'
-                  ? 'text-black border-b-2 border-black'
-                  : 'text-neutral-400 hover:text-black'
+                ? 'text-black border-b-2 border-black'
+                : 'text-neutral-400 hover:text-black'
                 }`}
             >
               DETAILS
@@ -560,8 +562,8 @@ const ProductDetail = () => {
             <button
               onClick={() => setActiveTab('care')}
               className={`pb-4 text-sm font-medium tracking-wide transition-colors ${activeTab === 'care'
-                  ? 'text-black border-b-2 border-black'
-                  : 'text-neutral-400 hover:text-black'
+                ? 'text-black border-b-2 border-black'
+                : 'text-neutral-400 hover:text-black'
                 }`}
             >
               CARE
@@ -569,8 +571,8 @@ const ProductDetail = () => {
             <button
               onClick={() => setActiveTab('shipping')}
               className={`pb-4 text-sm font-medium tracking-wide transition-colors ${activeTab === 'shipping'
-                  ? 'text-black border-b-2 border-black'
-                  : 'text-neutral-400 hover:text-black'
+                ? 'text-black border-b-2 border-black'
+                : 'text-neutral-400 hover:text-black'
                 }`}
             >
               SHIPPING
