@@ -710,6 +710,66 @@ const Admin = () => {
                 </div>
               )}
 
+              {/* Optional Colors */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-900">
+                  Colors <span className="text-gray-400 text-xs">(optional)</span>
+                </label>
+                <div className="space-y-2">
+                  {productForm.colors.filter(c => c.name || c.hex).length === 0 && productForm.colors[0]?.name === '' && (
+                    <p className="text-xs text-gray-500 mb-2">No colors added. Product will display without color options.</p>
+                  )}
+                  {productForm.colors.map((color, index) => (
+                    <div key={index} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={color.name}
+                        onChange={(e) => {
+                          const newColors = [...productForm.colors];
+                          newColors[index] = { ...newColors[index], name: e.target.value };
+                          setProductForm({ ...productForm, colors: newColors });
+                        }}
+                        className="input flex-1"
+                        placeholder="Color name (e.g., Navy)"
+                      />
+                      <input
+                        type="color"
+                        value={color.hex || '#000000'}
+                        onChange={(e) => {
+                          const newColors = [...productForm.colors];
+                          newColors[index] = { ...newColors[index], hex: e.target.value };
+                          setProductForm({ ...productForm, colors: newColors });
+                        }}
+                        className="w-12 h-10 border rounded cursor-pointer"
+                        title="Pick color"
+                      />
+                      {productForm.colors.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newColors = productForm.colors.filter((_, i) => i !== index);
+                            setProductForm({ ...productForm, colors: newColors.length ? newColors : [{ name: '', hex: '' }] });
+                          }}
+                          className="px-2 text-red-600 hover:text-red-800"
+                        >
+                          <X size={18} />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setProductForm({
+                    ...productForm,
+                    colors: [...productForm.colors, { name: '', hex: '#000000' }]
+                  })}
+                  className="text-sm text-black hover:text-gray-600 mt-2"
+                >
+                  + Add color
+                </button>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-900">Tags (comma-separated)</label>
                 <input
