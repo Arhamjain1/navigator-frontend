@@ -4,6 +4,7 @@ import { Menu, X, ShoppingBag, User, Search, ChevronDown, Heart } from 'lucide-r
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { categoriesAPI } from '../utils/api';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,11 +16,20 @@ const Navbar = () => {
   const { wishlistCount } = useWishlist();
   const location = useLocation();
 
-  const categories = [
-    { name: 'Polo Shirts', slug: 'polo-shirts' },
-    { name: 'Knit Polo Shirts', slug: 'knit-polo-shirts' },
-    { name: 'Zip Polo Shirts', slug: 'zip-polo-shirts' },
-  ];
+  const [categories, setCategories] = useState([]);
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoriesAPI.getAll();
+        setCategories(response.data.map(cat => ({ name: cat.name, slug: cat.slug })));
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Check if we're on homepage
   const isHomepage = location.pathname === '/';

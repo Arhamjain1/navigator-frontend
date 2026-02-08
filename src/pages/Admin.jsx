@@ -13,7 +13,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { productsAPI, ordersAPI, uploadAPI } from '../utils/api';
+import { productsAPI, ordersAPI, uploadAPI, categoriesAPI } from '../utils/api';
 import { formatPrice, formatDate, getStatusColor } from '../utils/helpers';
 import Loading from '../components/Loading';
 import toast from 'react-hot-toast';
@@ -29,6 +29,9 @@ const Admin = () => {
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
   const [productForm, setProductForm] = useState({
     name: '',
     description: '',
@@ -60,14 +63,16 @@ const Admin = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [statsRes, productsRes, ordersRes] = await Promise.all([
+      const [statsRes, productsRes, ordersRes, categoriesRes] = await Promise.all([
         ordersAPI.getStats(),
         productsAPI.getAll({ limit: 100 }),
         ordersAPI.getAll({ limit: 100 }),
+        categoriesAPI.getAll(),
       ]);
       setStats(statsRes.data);
       setProducts(productsRes.data.products);
       setOrders(ordersRes.data.orders);
+      setCategories(categoriesRes.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Failed to fetch data');
@@ -83,7 +88,7 @@ const Admin = () => {
       description: '',
       price: '',
       originalPrice: '',
-      category: 't-shirts',
+      category: categories[0]?.slug || '',
       subcategory: '',
       images: [''],
       sizes: [],
@@ -204,8 +209,24 @@ const Admin = () => {
   };
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34', '36', '38', '40'];
-  const categories = ['polo-shirts', 'knit-polo-shirts', 'zip-polo-shirts', 't-shirts', 'shirts'];
   const statusOptions = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+
+  const handleAddNewCategory = async () => {
+    if (!newCategoryName.trim()) {
+      toast.error('Please enter a category name');
+      return;
+    }
+    try {
+      const response = await categoriesAPI.create({ name: newCategoryName.trim() });
+      setCategories([...categories, response.data]);
+      setProductForm({ ...productForm, category: response.data.slug });
+      setNewCategoryName('');
+      setShowNewCategoryInput(false);
+      toast.success('Category created!');
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to create category');
+    }
+  };
 
   // Show loading while auth is being checked
   if (authLoading) return <Loading fullScreen />;
@@ -538,17 +559,55 @@ const Admin = () => {
 
               <div>
                 <label className="block text-sm font-medium mb-2 text-gray-900">Category *</label>
-                <select
-                  value={productForm.category}
-                  onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
-                  className="input"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                    </option>
-                  ))}
-                </select>
+                <div className="flex gap-2">
+                  <select
+                    value={productForm.category}
+                    onChange={(e) => {
+                      if (e.target.value === '__add_new__') {
+                        setShowNewCategoryInput(true);
+                      } else {
+                        setProductForm({ ...productForm, category: e.target.value });
+                      }
+                    }}
+                    className="input flex-1"
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map((cat) => (
+                      <option key={cat._id || cat.slug} value={cat.slug}>
+                        {cat.name}
+                      </option>
+                    ))}
+                    <option value="__add_new__">+ Add New Category</option>
+                  </select>
+                </div>
+                {showNewCategoryInput && (
+                  <div className="mt-2 p-3 border border-gray-200 rounded-lg bg-gray-50">
+                    <label className="block text-xs text-gray-600 mb-1">New Category Name</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        placeholder="e.g., Summer Collection"
+                        className="input flex-1"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddNewCategory}
+                        className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
+                      >
+                        Add
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setShowNewCategoryInput(false); setNewCategoryName(''); }}
+                        className="px-3 py-2 text-gray-600 hover:text-black"
+                      >
+                        <X size={18} />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

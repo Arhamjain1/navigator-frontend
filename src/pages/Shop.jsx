@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { SlidersHorizontal, X, ChevronDown, Grid3X3, LayoutGrid, ChevronRight } from 'lucide-react';
-import { productsAPI } from '../utils/api';
+import { productsAPI, categoriesAPI } from '../utils/api';
 import ProductCard from '../components/ProductCard';
 import Loading from '../components/Loading';
 
@@ -13,13 +13,24 @@ const Shop = () => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [gridCols, setGridCols] = useState(4);
   const productsRef = useRef(null);
+  const [categories, setCategories] = useState([{ value: 'all', label: 'All Products' }]);
 
-  const categories = [
-    { value: 'all', label: 'All Products' },
-    { value: 'polo-shirts', label: 'Polo Shirts' },
-    { value: 'knit-polo-shirts', label: 'Knit Polo Shirts' },
-    { value: 'zip-polo-shirts', label: 'Zip Polo Shirts' },
-  ];
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoriesAPI.getAll();
+        const apiCategories = response.data.map(cat => ({
+          value: cat.slug,
+          label: cat.name
+        }));
+        setCategories([{ value: 'all', label: 'All Products' }, ...apiCategories]);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const sortOptions = [
     { value: 'newest', label: 'Newest' },
