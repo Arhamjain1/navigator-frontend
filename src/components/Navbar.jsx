@@ -56,8 +56,8 @@ const Navbar = () => {
     : 'text-white';
 
   return (
-    <header className={`fixed left-0 right-0 z-50 transition-all duration-500 ${navBg}`}
-      style={{ top: isScrolled ? '0' : '32px' }}
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${navBg}`}
+      style={{ top: isHomepage && !isScrolled ? '40px' : '0' }}
     >
       <nav className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">

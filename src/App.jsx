@@ -5,7 +5,6 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import Navbar from './components/Navbar';
-import AnnouncementBanner from './components/AnnouncementBanner';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -42,65 +41,64 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-            <div className="min-h-screen flex flex-col">
-              <AnnouncementBanner />
-              <Navbar />
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/shop" element={<Shop />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/wishlist" element={<Wishlist />} />
-                  <Route path="/checkout" element={<Checkout />} />
-                  <Route path="/order-success/:id" element={<OrderSuccess />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/admin" element={<Admin />} />
-                  <Route path="/help-center" element={<HelpCenter />} />
-                  <Route path="/shipping-info" element={<ShippingInfo />} />
-                  <Route path="/returns-exchanges" element={<ReturnsExchanges />} />
-                  <Route path="/size-guide" element={<SizeGuide />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-            <Toaster
-              position="top-center"
-              containerStyle={{
-                top: 80,
-              }}
-              toastOptions={{
-                duration: 3000,
+          <div className="min-h-screen flex flex-col">
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/shop" element={<Shop />} />
+                <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/wishlist" element={<Wishlist />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/order-success/:id" element={<OrderSuccess />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/help-center" element={<HelpCenter />} />
+                <Route path="/shipping-info" element={<ShippingInfo />} />
+                <Route path="/returns-exchanges" element={<ReturnsExchanges />} />
+                <Route path="/size-guide" element={<SizeGuide />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+          <Toaster
+            position="top-center"
+            containerStyle={{
+              top: 80,
+            }}
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: '#000',
+                color: '#fff',
+                padding: '16px 24px',
+                borderRadius: '0',
+                fontSize: '14px',
+                fontWeight: '500',
+                maxWidth: '400px',
+                textAlign: 'center',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#fff',
+                  secondary: '#000',
+                },
+              },
+              error: {
+                duration: 4000,
+                iconTheme: {
+                  primary: '#fff',
+                  secondary: '#000',
+                },
                 style: {
-                  background: '#000',
-                  color: '#fff',
-                  padding: '16px 24px',
-                  borderRadius: '0',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  maxWidth: '400px',
-                  textAlign: 'center',
+                  background: '#dc2626',
                 },
-                success: {
-                  iconTheme: {
-                    primary: '#fff',
-                    secondary: '#000',
-                  },
-                },
-                error: {
-                  duration: 4000,
-                  iconTheme: {
-                    primary: '#fff',
-                    secondary: '#000',
-                  },
-                  style: {
-                    background: '#dc2626',
-                  },
-                },
-              }}
-            />
+              },
+            }}
+          />
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
