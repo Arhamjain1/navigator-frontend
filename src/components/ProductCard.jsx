@@ -9,7 +9,11 @@ const ProductCard = ({ product, variant = 'default' }) => {
   const { isInWishlist, toggleWishlist, isProcessing } = useWishlist();
   const discount = calculateDiscount(product.originalPrice, product.price);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
   const images = product.images?.length > 0 ? product.images : ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&q=80'];
+
+  // Get second image for hover effect
+  const hoverImage = images.length > 1 ? images[1] : images[0];
 
   // Handle image navigation
   const handlePrevImage = (e) => {
@@ -52,16 +56,29 @@ const ProductCard = ({ product, variant = 'default' }) => {
 
 
   return (
-    <div className="group product-card">
+    <div
+      className="group product-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <Link to={`/product/${product._id}`} className="block">
         {/* Image Container */}
         <div className={`relative ${aspectRatio} overflow-hidden bg-neutral-100 mb-5`}>
-          {/* Current image */}
+          {/* Primary image */}
           <img
             src={images[currentImageIndex]}
             alt={product.name}
-            className="absolute inset-0 w-full h-full object-cover object-top transition-all duration-500"
+            className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ${isHovered && images.length > 1 ? 'opacity-0 scale-105' : 'opacity-100 scale-100'}`}
           />
+
+          {/* Hover image (second image) - NUDE Project style swap */}
+          {images.length > 1 && (
+            <img
+              src={hoverImage}
+              alt={`${product.name} alternate`}
+              className={`absolute inset-0 w-full h-full object-cover object-top transition-all duration-700 ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}
+            />
+          )}
 
           {/* Image Navigation Arrows - only show if multiple images */}
           {images.length > 1 && (
@@ -153,7 +170,7 @@ const ProductCard = ({ product, variant = 'default' }) => {
               {product.category}
             </p>
           )}
-          
+
           {/* Product Name with Mobile Wishlist Button */}
           <div className="flex items-start gap-2">
             <h3 className="text-sm font-medium text-black leading-snug group-hover:opacity-70 transition-opacity duration-300 line-clamp-2 flex-1">
@@ -161,9 +178,8 @@ const ProductCard = ({ product, variant = 'default' }) => {
             </h3>
             {/* Mobile Wishlist Button - Always visible on mobile */}
             <button
-              className={`md:hidden p-1.5 flex-shrink-0 transition-colors ${
-                isInWishlist(product._id) ? 'text-red-500' : 'text-neutral-400 hover:text-black'
-              }`}
+              className={`md:hidden p-1.5 flex-shrink-0 transition-colors ${isInWishlist(product._id) ? 'text-red-500' : 'text-neutral-400 hover:text-black'
+                }`}
               aria-label="Add to wishlist"
               onClick={handleWishlist}
               disabled={isProcessing(product._id)}
@@ -175,7 +191,7 @@ const ProductCard = ({ product, variant = 'default' }) => {
               )}
             </button>
           </div>
-          
+
           {/* Price */}
           <div className="flex items-baseline gap-2">
             <span className="text-sm font-semibold text-black">

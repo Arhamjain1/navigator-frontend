@@ -90,65 +90,90 @@ const Home = () => {
 
   return (
     <div>
-      {/* Announcement Bar */}
-      <div className="bg-black text-white py-2.5 text-center text-sm overflow-hidden">
-        <div className="animate-marquee whitespace-nowrap flex">
-          <span className="mx-8">FREE SHIPPING ON ORDERS OVER ₹2,999</span>
-          <span className="mx-8">•</span>
-          <span className="mx-8">NEW ARRIVALS EVERY WEEK</span>
-          <span className="mx-8">•</span>
-          <span className="mx-8">7-DAY EASY RETURNS</span>
-          <span className="mx-8">•</span>
-          <span className="mx-8">FREE SHIPPING ON ORDERS OVER ₹2,999</span>
-          <span className="mx-8">•</span>
-          <span className="mx-8">NEW ARRIVALS EVERY WEEK</span>
-          <span className="mx-8">•</span>
-          <span className="mx-8">7-DAY EASY RETURNS</span>
-        </div>
-      </div>
-
-      {/* Hero Section - Full Width Immersive */}
-      <section className="relative w-full min-h-[70vh] md:min-h-0 md:aspect-[21/9] overflow-hidden bg-neutral-900">
+      {/* Hero Section - Full Width Immersive with Video Option */}
+      <section className="relative w-full h-screen md:h-[90vh] overflow-hidden bg-black -mt-[88px]">
+        {/* Video/Image Background */}
         <div className="absolute inset-0">
+          {/* Video background - using a fashion video */}
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            poster="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=90"
+          >
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-a-young-man-walking-down-the-street-wearing-stylish-clothes-34470-large.mp4" type="video/mp4" />
+          </video>
+          {/* Fallback image if video doesn't load */}
           <img
             src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=90"
             alt="Hero"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent" />
+          {/* Gradient overlays */}
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
         </div>
 
-        <div className="relative h-full flex items-center pt-24 md:pt-0">
+        {/* Hero Content - Centered Bold Typography */}
+        <div className="relative h-full flex items-center justify-center text-center pt-20">
           <div className="container-custom">
-            <div className="max-w-2xl">
-              <p className="text-white/80 text-xs md:text-base uppercase tracking-[0.3em] mb-4 animate-fade-in">
-                {heroSlides[0].description}
+            <div className="max-w-4xl mx-auto">
+              <p className="text-white/70 text-xs md:text-sm uppercase tracking-[0.4em] mb-6 animate-fade-in">
+                New Season 2026
               </p>
-              <h1 className="hero-title text-white mb-2 animate-slide-up">
-                {heroSlides[0].title}
+
+              {/* Bold Display Typography - NUDE Project Style */}
+              <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-display font-bold text-white tracking-tight mb-4 animate-slide-up leading-[0.9]">
+                NAVIGATOR
               </h1>
-              <h1 className="hero-title text-white/90 mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-                {heroSlides[0].subtitle}
-              </h1>
-              <div className="flex flex-wrap gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-                <Link to="/shop" className="btn-white">
-                  {heroSlides[0].cta}
-                  <ArrowRight className="ml-2" size={18} />
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light text-white/80 tracking-[0.2em] mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+                PREMIUM MENSWEAR
+              </h2>
+
+              <div className="flex flex-wrap justify-center gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+                <Link to="/shop" className="btn-white text-xs tracking-[0.2em]">
+                  SHOP NOW
+                  <ArrowRight className="ml-3" size={16} />
                 </Link>
-                <Link to="/shop?tag=new-arrivals" className="btn bg-transparent text-white border-2 border-white hover:bg-white hover:text-black">
-                  New Arrivals
+                <Link to="/shop?tag=new-arrivals" className="btn bg-transparent text-white border border-white/50 hover:bg-white hover:text-black text-xs tracking-[0.2em]">
+                  NEW ARRIVALS
                 </Link>
+              </div>
+
+              {/* Scroll indicator */}
+              <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+                <ChevronRight size={24} className="text-white/50 rotate-90" />
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center pt-2">
-            <div className="w-1 h-2 bg-white rounded-full" />
-          </div>
+      {/* Marquee Collection Banner - NUDE Project Style */}
+      <section className="bg-black text-white py-6 overflow-hidden">
+        <div className="flex animate-marquee-slow whitespace-nowrap">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="flex items-center">
+              <span className="text-2xl md:text-4xl font-display tracking-wider mx-8">NEW COLLECTION</span>
+              <span className="text-white/30 mx-4">★</span>
+              <span className="text-2xl md:text-4xl font-display tracking-wider mx-8">POLO SHIRTS</span>
+              <span className="text-white/30 mx-4">★</span>
+              <span className="text-2xl md:text-4xl font-display tracking-wider mx-8">PREMIUM KNITS</span>
+              <span className="text-white/30 mx-4">★</span>
+            </div>
+          ))}
         </div>
+        <style>{`
+          @keyframes marquee-slow {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-25%); }
+          }
+          .animate-marquee-slow {
+            animation: marquee-slow 20s linear infinite;
+          }
+        `}</style>
       </section>
 
       {/* Category Grid - Nike Style */}
@@ -165,7 +190,7 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {categories.map((cat, index) => (
+            {categories.map((cat) => (
               <Link
                 key={cat.slug}
                 to={cat.tag ? `/shop?tag=${cat.tag}` : `/shop?category=${cat.slug}`}
@@ -345,3 +370,4 @@ const Home = () => {
 };
 
 export default Home;
+
